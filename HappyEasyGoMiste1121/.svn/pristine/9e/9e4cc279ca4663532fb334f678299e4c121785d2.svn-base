@@ -1,0 +1,446 @@
+import { DomainManager } from '../../config/DomainManager';
+
+export class User {
+  /**
+   * 
+   * @param {string} firstname
+   * @param {string} lastname
+   * @param {string} emailAddress
+   * @param {string} phoneNumber
+   */
+  constructor(
+    firstName,
+    lastName,
+    middleName,
+    email,
+    cellphone,
+    sex,
+    address,
+    birthDate,
+    userId,
+    userName,
+    payPassword
+  ) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.middleName = middleName;
+    this.email = email;
+    this.cellphone = cellphone;
+    this.sex = sex;
+    this.address = address;
+    this.birthDate = birthDate;
+    this.userId = userId;
+    this.userName = userName;
+    this.payPassword = payPassword;
+  }
+
+  /**
+   * 
+   * @param {any} vueComp
+   * @param {string} username
+   * @param {string} password
+   * @param {boolean} ifRememberme
+   */
+  static login(vueComp, username, password, ifRememberme) {
+    let params = new Map();
+    params.set("userName", username);
+    params.set("password", password);
+    params.set("rememberMe", ifRememberme);
+
+    let queryParams = DomainManager.getQueryString(params);
+    let url = DomainManager.getSearchLoginURLStirng(queryParams);
+    //{ credentials: true, headers: { "x-Device": "mobile" } }
+    let result = vueComp.$http.get(url, {
+      withCredentials: true,
+      headers: { "x-Device": "mobile" }
+    });
+
+    return result;
+    //return vueComp.$http.get(url);
+  }
+
+  /**
+   * 
+   * @param {any} vueComp
+   * @param {string} facebookid
+   * @param {string} email
+   * @param {string} name
+   */
+  static loginWithFacebookInfos(
+    vueComp,
+    facebookid,
+    email,
+    firstName,
+    lastName
+  ) {
+    let parmsMap = new Map();
+
+    parmsMap.set("id", facebookid);
+    parmsMap.set("first_name", firstName);
+    parmsMap.set("last_name", lastName);
+    parmsMap.set("email", email);
+
+    let qs = DomainManager.getQueryString(parmsMap);
+    let urlString = DomainManager.getLoginWithFaceBookAccountUrlString(qs);
+
+    vueComp.$http
+      .get(urlString)
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  static getUserOrders(vueComp) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http
+        .get(DomainManager.getUserOrdersUrlString(), { withCredentials: true })
+        .then(res => {
+          res
+            .json()
+            .then(json => {
+              resolve(json);
+            })
+            .catch(err => reject(err));
+        })
+        .catch(err => reject(err));
+    });
+  }
+
+  static loadUser(vueComp) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http
+        .get(DomainManager.getUserInfoUrlString(), { withCredentials: true })
+        .then(res => {
+          res.json().then(json => {
+            let {
+              firstName,
+              lastName,
+              middleName,
+              email,
+              cellphone,
+              sex,
+              address,
+              birthDate,
+              userId,
+              userName,
+              payPassword
+            } = json;
+            resolve(
+              new User(
+                firstName,
+                lastName,
+                middleName,
+                email,
+                cellphone,
+                sex,
+                address,
+                birthDate,
+                userId,
+                userName,
+                payPassword
+              )
+            );
+          });
+        })
+        .catch(err => reject(err));
+    });
+  }
+
+  static changeUserInfo(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http
+        .post(DomainManager.changeUserInfo(String), {
+          withCredentials: true,
+          Header: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          }
+        })
+        .then(res => {
+          res
+            .json()
+            .then(json => {
+              resolve(json);
+            })
+            .catch(err => {
+              reject(err);
+            });
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+
+  static getPassword(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http
+        .post(DomainManager.getPassword(String))
+        .then(res => {
+          res.json().then(json => resolve(json));
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+
+  static changeUserPassword(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http
+        .post(DomainManager.changeUserPassword(String), {
+          withCredentials: true
+        })
+        .then(res => {
+          res
+            .json()
+            .then(json => {
+              resolve(json);
+            })
+            .catch(err => {
+              reject(err);
+            });
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+
+  static resetPayPassword(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http.get(DomainManager.resetPayPassword(String)).then(res => {
+        res
+          .json()
+          .then(json => {
+            resolve(json);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    });
+  }
+
+  static setPayPassword(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http.post(DomainManager.setPayPassword(String)).then(res => {
+        res
+          .json()
+          .then(json => {
+            resolve(json);
+          })
+          .then(err => {
+            reject(err);
+          });
+      });
+    });
+  }
+
+  static settoPayPassword(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http.post(DomainManager.settoPayPassword(String)).then(res => {
+        res
+          .json()
+          .then(json => {
+            resolve(json);
+          })
+          .then(err => {
+            reject(err);
+          });
+      });
+    });
+  }
+
+  static pushFeedback(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http
+        .post(DomainManager.feedback(String))
+        .then(res => {
+          res
+            .json()
+            .then(json => {
+              resolve(json);
+            })
+            .catch(err => {
+              reject(err);
+            });
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+
+  static getGold(vueComp) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http
+        .get(DomainManager.balanceOfGold(), { withcredentials: true })
+        .then(
+          res => {
+            resolve(res.body);
+          },
+          res => {
+            reject(res);
+          }
+        )
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+
+  static sendRegisterOTP(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http.post(DomainManager.sendRegisterOTP(String)).then(res => {
+        res
+          .json()
+          .then(json => {
+            resolve(json);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    });
+  }
+
+  static applyResetPass(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http.post(DomainManager.applyResetPass(String)).then(res => {
+        res
+          .json()
+          .then(json => {
+            resolve(json);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    });
+  }
+
+  static resetPayPasswordNew(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http
+        .post(DomainManager.resetPayPasswordNew(String))
+        .then(res => {
+          res
+            .json()
+            .then(json => {
+              resolve(json);
+            })
+            .catch(err => {
+              reject(err);
+            });
+        });
+    });
+  }
+
+  static getCheckWay(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http.post(DomainManager.getCheckWay(String)).then(res => {
+        res
+          .json()
+          .then(json => {
+            resolve(json);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    });
+  }
+
+  static resetPassNew(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http.post(DomainManager.resetPassNew(String)).then(res => {
+        res
+          .json()
+          .then(json => {
+            resolve(json);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    });
+  }
+
+  static setPayPasswordNew(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http.post(DomainManager.setPayPasswordNew(String)).then(res => {
+        res
+          .json()
+          .then(json => {
+            resolve(json);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    });
+  }
+
+  static rechargeWallet(vueComp, String) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http
+        .get(DomainManager.rechargeWallet(String), { withCredentials: true })
+        .then(res => {
+          res
+            .json()
+            .then(json => {
+              resolve(json);
+            })
+            .catch(err => {
+              reject(err);
+            });
+        });
+    });
+  }
+
+  static searchCashBack(vueComp) {
+    return new Promise((resolve, reject) => {
+      vueComp.$http
+        .get(DomainManager.searchCashBack(), { withCredentials: true })
+        .then(res => {
+          res
+            .json()
+            .then(json => {
+              resolve(json);
+            })
+            .catch(err => {
+              reject(err);
+            });
+        });
+    });
+  }
+
+  static makePayment(windowObj, data, sessionStorage) {
+    let paymentCallback = event => {
+      var eventName = event.name;
+      switch (eventName) {
+        case "PAYMENT_REQUEST":
+          console.log(event.message);
+          break;
+        default:
+          console.log(event.message);
+      }
+    };
+    // PROD
+    var config = {};
+    config.layout = { view: "popup", width: "500" };
+    config.mode = "PROD";
+    let res = windowObj.CashFree.init(config);
+
+    if (res.status == "OK") {
+      //sessionStorage.clear()
+      windowObj.CashFree.makePayment(data, paymentCallback);
+    } else {
+      //handle error
+      console.log(response.message);
+    }
+  }
+}

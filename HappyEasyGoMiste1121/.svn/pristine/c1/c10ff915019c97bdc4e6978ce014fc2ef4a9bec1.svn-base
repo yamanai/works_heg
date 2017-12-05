@@ -1,0 +1,45 @@
+<template>
+	<div class="wrapper" id="wrap" ref="wrapper">
+		<home @showOffers='showOffers' @hideOffer="hideOffer" @showOffer="showOffer"></home>
+		<!--<offers v-show="showOff"></offers>-->
+	</div>
+</template>
+<script>
+	import home from './child/main.vue'
+	import offers from './child/offers.vue'
+	export default{
+		components:{
+			home,
+//			offers
+		},
+		data(){
+			return {
+				showOff:true
+			}
+		},
+		computed:{
+			scrollTop(){
+				return window.innerHeight;
+			},
+		},
+		methods:{
+			showOffers(){
+				let self = this;
+				$('#wrap').animate({scrollTop:self.scrollTop}, 500)
+			},
+			hideOffer(){
+				this.showOff = false;
+			},
+			showOffer(){
+				this.showOff = true;
+			}
+		}
+	}
+</script>
+<style lang="less" scoped>
+	.wrapper{
+		height:100%;
+		overflow:auto;
+	}
+
+</style>

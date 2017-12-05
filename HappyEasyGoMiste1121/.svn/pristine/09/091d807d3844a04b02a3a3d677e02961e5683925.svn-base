@@ -1,0 +1,303 @@
+<template>
+	<div class="wrapper">
+		<head-top class="header">
+			<i slot="left" class="prev iconfont icon-back" @click="$router.go(-1)"></i>
+			<div slot="title" class="title">Referral Program</div>
+			<i slot="right" alt="" class="sp iconfont icon-back"></i>
+		</head-top>
+		<div class="container">
+			<div class="top"></div>
+			<div class="share">
+				<h2 class="green">Share Your Refferal Link</h2>
+				<div class="line"></div>
+				<div class="share-list">
+					<h2>
+						<span class="fc">By Email </span> (Invite upto 5 friends at 1 time)</h2>
+					<div class="form-group flex space-between">
+						<input type="text" placeholder="Enter Friend's Email">
+						<a href="javascript:">Share</a>
+					</div>
+				</div>
+				<div class="share-list">
+					<h2>
+						<span class="fc">By SMS</span> (Invite upto 5 friends at 1 time)</h2>
+					<div class="form-group flex space-between">
+						<input type="text" placeholder="Enter Friend's Mobile No.">
+						<a href="javascript:">Share</a>
+					</div>
+				</div>
+				<div class="share-list">
+					<h2>
+						<span class="fc">By URL</span> (Copy your unique url at 1 time)</h2>
+					<div class="form-group flex space-between">
+						<input type="text" placeholder="https://www.happeasygo.com/">
+						<a href="javascript:">Copy</a>
+					</div>
+				</div>
+			</div>
+			<div class="media-share">
+				<h2 class="green">Share on your Social Media</h2>
+				<div class="line"></div>
+
+				<div class="share-list flex content-center">
+					<a class="fb" href="javascript:">
+						<img src="../../assets/images/referral/facebook.jpg" alt="">
+					</a>
+					<a id="tw" href="javascript:">
+						<img src="../../assets/images/referral/twitter.jpg" alt="">
+					</a>
+					<a id="sms" href="javascript:">
+						<img src="../../assets/images/referral/unkonw.jpg" alt="">
+					</a>
+				</div>
+			</div>
+			<div class="section1">
+				<h2 class="green">How It Works?</h2>
+				<div class="line"></div>
+				<p>
+					&bull; Sign in / Sign on HappyEasyGo.com and join in our Referral Program.
+				</p>
+				<p>
+					&bull; Share with your friends by provided social Media, Email or SMS.
+				</p>
+				<p>
+					&bull; You will earn Rs.500 Happy Silver when your friend signs up on HappyEasyGo.com by your referral links.
+				</p>
+				<p>
+					&bull; You will earn Rs.50 Happy Gold when your referred friends issue their order on HappyEasyGo.com.
+				</p>
+				<p>
+					The total rewards of each person is no more than
+					<i class="rs">Rs.</i>1000 Happy Gold.
+				</p>
+			</div>
+			<div class="foot flex content-center">
+				<a href="javascript:" @click="$router.push('referrerInfo')">Click here for Terms &amp; Conditions</a>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+import headTop from '../../components/head/head.vue'
+export default {
+	components: {
+		headTop
+	}
+}
+</script>
+<style lang='less' scoped>
+.wrapper {
+	font-family: "PingFangSC";
+	background: #f4f4f4;
+}
+
+.header {
+	background: url('../../assets/images/referral/head_top.jpg') center no-repeat;
+	.title {
+		line-height: 2.04rem;
+		font-size: 0.768rem;
+		color: #fff;
+	}
+	.sp {
+		opacity: 0;
+	}
+}
+
+.top {
+	height: 12.4rem;
+	background: url('../../assets/images/referral/top_bg.jpg') center no-repeat;
+	background-size: 100%;
+}
+
+.share {
+	background-color: #fff;
+	padding: 0.64rem;
+	h2 {
+		font-size: 0.597rem;
+		height: 1.2rem;
+		line-height: 1.2rem;
+	}
+	.line {
+		width: 12%;
+		margin: 0 auto;
+		border-bottom: 1px solid #0b9d78;
+	}
+	.share-list {
+		text-align: left;
+		margin: 0.2rem 0;
+		h2 {
+			color: #999;
+			.fc {
+				color: #666;
+			}
+		}
+		div {
+			padding: 0.4rem 0;
+		}
+		.form-group {
+			height: 1.7rem;
+			input {
+				width: 78%;
+				height: 100%;
+				line-height: 1.7rem;
+				font-size: 0.6rem;
+				box-sizing: border-box;
+				padding: 0.32rem;
+				border: 1px solid #ddd;
+				border-right: 0;
+				border-top-left-radius: 2px;
+				border-bottom-left-radius: 2px;
+				border-top-right-radius: 0;
+				border-bottom-right-radius: 0;
+			}
+			a {
+				display: inline-block;
+				width: 22%;
+				height: 100%;
+				line-height: 1.7rem;
+				font-size: 0.512rem;
+				color: #fff;
+				background-color: #ffa033;
+				text-align: center;
+				border-top-right-radius: 2px;
+				border-bottom-right-radius: 2px;
+			}
+		}
+
+		#fac {
+			width: 1.36rem;
+			height: 1.36rem;
+			background: url('../../assets/images/referral/facebook-icon.png') center no-repeat;
+			background-size: 7.2rem 1.36rem;
+			display: block;
+			margin-left: 0.4rem;
+		}
+	}
+}
+
+.media-share {
+	background-color: #fff;
+	margin-top: 0.21rem; // display: none;
+	h2 {
+		font-size: 0.597rem;
+		height: 1.2rem;
+		line-height: 1.2rem;
+	}
+	.line {
+		width: 12%;
+		margin: 0 auto;
+		border-bottom: 1px solid #0b9d78;
+	}
+	.share-list {
+		text-align: left;
+		padding: 1.7rem 0;
+		h2 {
+			color: #999;
+			.fc {
+				color: #666;
+			}
+		}
+		div {
+			padding: 0.4rem 0;
+		}
+		.form-group {
+			height: 1.7rem;
+			input {
+				width: 78%;
+				height: 100%;
+				line-height: 1.7rem;
+				font-size: 0.6rem;
+				box-sizing: border-box;
+				padding: 0.32rem;
+				border: 1px solid #ddd;
+				border-right: 0;
+				border-top-left-radius: 2px;
+				border-bottom-left-radius: 2px;
+				border-top-right-radius: 0;
+				border-bottom-right-radius: 0;
+			}
+			a {
+				display: inline-block;
+				width: 22%;
+				height: 100%;
+				line-height: 1.7rem;
+				font-size: 0.512rem;
+				color: #fff;
+				background-color: #ffa033;
+				text-align: center;
+				border-top-right-radius: 2px;
+				border-bottom-right-radius: 2px;
+			}
+		}
+
+		a {
+			width: 1.7rem;
+			height: 1.7rem;
+			color: #000;
+			background: lightblue;
+			text-align: center;
+			display: block;
+			border-radius: 4px;
+			margin: 0 1.06rem;
+			img {
+				display: block;
+				width: 1.7rem;
+				height: 1.7rem;
+			}
+		}
+	}
+}
+
+.section1 {
+	padding: 0.68rem;
+	background-color: #fff;
+	margin-top: 0.21rem;
+	.line {
+		width: 12%;
+		margin: 0 auto;
+		border-bottom: 1px solid #0b9d78;
+	}
+	h2 {
+		font-size: 0.597rem;
+		height: 1.2rem;
+		line-height: 1.2rem;
+	}
+	p {
+		font-size: 0.512rem;
+		text-align: left;
+		color: #666;
+		line-height: 0.769rem;
+		margin-top: 0.4rem;
+	}
+}
+
+.foot {
+	background-color: #fff;
+	padding: 1rem 0;
+	a {
+		width: 10.68rem;
+		height: 1.2rem;
+		line-height: 1.2rem;
+		border: 1px solid #ffa234;
+		font-size: 0.6rem;
+		color: #ffa234;
+		text-align: center;
+		border-radius: 0.2rem;
+	}
+}
+
+::-webkit-input-placeholder {
+	color: #adadad;
+	font-size: 0.6rem;
+}
+
+::-moz-placeholder {
+	color: #adadad;
+	font-size: 0.6rem;
+}
+
+:-moz-placeholder {
+	color: #adadad;
+	font-size: 0.6rem;
+}
+</style>

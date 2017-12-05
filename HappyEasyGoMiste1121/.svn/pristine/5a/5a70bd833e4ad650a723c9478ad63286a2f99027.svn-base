@@ -1,0 +1,34 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+import App from './App.vue'
+import router from './router'
+import resource from 'vue-resource'
+// import Mint from 'mint-ui'
+import './filter/filter.js'
+import {FontUtil} from './models/utils'
+import {Button,Popup,DatetimePicker,Picker,Range,Radio} from 'mint-ui'
+import { store } from './vuex'
+Vue.component('mt-datetime-picker', DatetimePicker);
+Vue.component('mt-picker', Picker);
+Vue.component('mt-button', Button);
+Vue.component('mt-range', Range);
+Vue.component('mt-popup', Popup);
+Vue.component('mt-radio', Radio);
+Vue.use(resource);
+// Vue.use(Mint);
+FontUtil.init();
+var vm = new Vue({
+  el: '#app',
+  store,
+  router,
+  store,
+  methods:{
+  	onLoadFinish(){
+  		window.heg && window.heg.onViewShow();
+  	}
+  },
+  mounted(){
+  	this.onLoadFinish();
+  },
+  render: h => h(App)
+})

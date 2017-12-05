@@ -1,0 +1,69 @@
+<template>
+	<swiper :options="swiperOption" ref="mySwiper">
+		<!-- slides -->
+		<swiper-slide v-for="item in imgList" :key="item.id"><div class="imglist">
+			<img :src="item.href" alt="">
+			<!--@click="$router.push(item.route)"-->
+		</div></swiper-slide>
+		<!-- Optional controls -->
+		<!--<div class="swiper-pagination"  slot="pagination"></div>-->
+		<div v-show="imgList.length!=1" class="swiper-button-prev" slot="button-prev"></div>
+		<div v-show="imgList.length!=1" class="swiper-button-next" slot="button-next"></div>
+		<!--<div class="swiper-scrollbar"   slot="scrollbar"></div>-->
+	</swiper>
+</template>
+<script>
+    export default {
+        name: 'carrousel',
+        data() {
+            return {
+                swiperOption: {
+     //                notNextTick: true,
+     //                autoplay: 2000,
+     //                direction: 'horizontal',
+     //                grabCursor: true,
+     //                setWrapperSize: true,
+     //                autoHeight: true,
+     //                pagination: 'null',
+     //                paginationClickable: true,
+     //                prevButton: '.swiper-button-prev',
+     //                nextButton: '.swiper-button-next',
+					// loop: true,
+     //                mousewheelControl: false,
+     //                observeParents: true,
+     //                debugger: true,
+                },
+                imgList:[
+                	{
+                		href:require('../../../../assets/images/home/hw.jpg'),
+                		route:'/wallet'
+                	}
+                	
+                ]
+            }
+        },
+        computed: {
+            swiper() {
+                return this.$refs.mySwiper.swiper
+            }
+        },
+        mounted() {
+          
+        }
+    }
+</script>
+<style lang='less' scoped>
+	.imglist{
+		height:12.8rem;
+		overflow:hidden;
+		img{
+			width:100%;
+		}
+	}
+	.swiper-button-prev,{
+		background:url('../../../../assets/images/prev.png') center 10px no-repeat;
+	}
+	.swiper-button-next{
+		background:url('../../../../assets/images/ic-btn-one.png') center 10px no-repeat;
+	}
+</style>

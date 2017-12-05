@@ -1,0 +1,257 @@
+<template>
+  <div id="my_profile">
+  	<head-top class="header">
+  		<img slot="left" :src="require('../../assets/images/prevs.png')" class="prev" @click="$router.go(-1)">
+  		<div slot="title" class="title">Profile</div>
+	  </head-top>
+    <div class="mp_container">
+      <div class="mp_info ">
+        <div class="mp_avatar flex content-center">
+          <div class="avatar">
+            <img :src="require('../../assets/images/menu/usericon.png')" alt="">
+          </div>
+        </div>
+        <div class="info_text">
+            <span class="name">{{username}}</span>
+        </div>
+        <div class="wave-img">
+          
+        </div>
+      </div>        
+      <div class="pro_info">
+        <div class="title flex space-between">
+          <span>Personal Info</span>
+          <a class="edit colorPri" @click="">Save</a>
+        </div>
+        <div class="pro_list">
+          <mt-field label="User Name" placeholder="Input your username" v-model="profile.name"></mt-field>
+          <mt-field label="Gender" placeholder="Input your username" v-model="profile.sex"></mt-field>
+
+          <mt-field label="E-mail" placeholder="Input your username" v-model="profile.email"></mt-field>      
+          <mt-field label="Mobile No." placeholder="Input your username" v-model="profile.cellphone"></mt-field>
+          <mt-field label="Date of birth" type="date" placeholder="Input your username" v-model="profile.email"></mt-field>
+          <mt-field label="User ID" placeholder="Input your username" v-model="profile.userId"></mt-field>
+          <mt-field label="Addredd" placeholder="Input your username" v-model="profile.address"></mt-field>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+	  import headTop from '../../components/head/head.vue'
+    import {CookieUtil} from '../../models/utils'
+    import {User} from '../../models/user'
+    import {loginUserInfo} from '../../vuex/models/user/XUser.js'
+    import {changeUserInfo} from '../../models/user'
+    import {DomainManager} from '../../config/DomainManager.js'
+    import {Toast,Indicator} from 'mint-ui';
+
+    export default{
+    	components:{
+    		headTop
+    	},
+        data() {
+    	    return {
+            user:Object,
+            showPro:false,
+            profile: {
+                username:'',
+                firstName:'',
+                lastName:'',
+                cellphone:'',
+                email:'',
+                address:'',
+                userId:'',
+                sex:null,
+            },
+            userPW: {
+                password:'',
+                newPassword:''
+            },
+            newPasswordRP:'',
+            infoArr:Array
+          }
+        },
+        computed: {
+            username(){
+              if(this.user.firstname == null && this.user.lastname == null){
+                return this.user.emailAddress;
+              }else{
+                return this.user.firstname + " " + this.user.lastname
+              }
+            }
+        },
+        created(){
+    	    // this.getUser()
+        },
+        methods:{
+    	    getUser(){
+            let cu = new CookieUtil(document)
+            let self = this;
+            if(cu.hasItem("uuid")){
+              User.loadUser(self)
+                  .then(user => {
+                      self.$nextTick(()=>{
+                          self.user = user;
+                          self.$store.commit(loginUserInfo,user)
+                      })
+                  })
+                  .catch(err => { console.log(err) })
+            }else {
+              console.log('error');
+            }
+          },
+         //    changeInfo(){
+         //        let self = this;
+         //        let infoString = '';
+         //        for(let v in this.proInfo){
+         //            if(this.proInfo[v] != ''){
+         //                infoString += v + '=' + this.proInfo[v] + '&';
+         //            }
+         //        }
+         //        User.changeUserInfo(this,infoString).then(function(res) {
+         //            if(res.success) {
+         //                Toast({
+         //                    message :'success',
+         //                    duration :1500
+         //                })
+         //            }else {
+         //                Toast({
+         //                    message :res.msg,
+         //                    duration :1500
+         //                })
+         //            }
+         //        });
+         //    },
+         //    changePassWord(){
+         //        console.log(this.userPW.password,this.userPW.newPassword,this.newPasswordRP);
+         //        if(this.userPW.password.trim() === '' || this.userPW.newPassword.trim() === '' ||
+         //            this.newPasswordRP.trim() === '') {
+         //            Toast({
+         //                message: 'the password can not be empty',
+         //                duration: 1500
+         //            })
+         //            return false;
+         //        }
+         //        if(this.userPW.newPassword !== this.newPasswordRP) {
+         //            Toast({
+         //                message: 'The password must be the same',
+         //                duration: 1500
+         //            })
+         //            return false;
+         //        }
+
+         //        let passwordString = '';
+         //        for (let v in this.userPW) {
+         //            passwordString += v + '=' + this.userPW[v] + '&'
+         //        }
+         //        User.changeUserPassword(this,passwordString).then(function(res){
+         //            console.log(res);
+         //                if(res.success){
+         //                    Toast({
+         //                        message: 'success!',
+         //                        duration: 1500
+         //                    })
+         //                }else {
+         //                    Toast({
+         //                        message: res.msg,
+         //                        duration: 1500
+         //                    })
+         //                }
+         //            }
+         //        ).catch(function(error) {
+         //            console.log(error);
+         //        })
+         //    }
+        },
+    }
+</script>
+
+<style lang="less" scoped>
+@import "../../assets/less/theme.less";
+  #my_profile {
+  	.header{
+      background:#f7f7f9;
+      .title{
+          font-size:0.768rem;
+          color:#333;
+      }
+    }
+    .mp_container{
+      margin-top:2rem;
+      // padding: 0 1.28rem;
+      // height: 10rem;
+      // background: url("../../assets/images/profile/user-bg2.png") 0 0 no-repeat;
+      background-size: cover;
+      .mp_info{
+        background-color: @primary-color;
+        .mp_avatar{
+          padding-top:0.6rem;
+          padding-bottom:0.34rem;
+          .avatar {
+              width: 4rem;
+              height: 4rem;
+              border-radius: 50%;
+              img{
+                  width:100%;
+              }
+          }
+        }
+        .info_text{
+          padding:1.1rem 0;
+          span{
+            display: block;
+            line-height: 1.5;
+            color: #ffffff;
+            font-size: 0.64rem;
+          }
+          .tel{
+              font-size: 0.512rem;
+          }
+        }
+        .change_info{
+          a{
+            display: inline-block;
+            padding:0 0.2rem;
+            img{
+                display: inline-block;
+                width: 0.7rem;
+                height: 0.7rem;
+            }
+          }
+        }
+      }
+      .wave-img{
+        width:100%;
+        height: 1rem;
+      }
+      .pro_info{
+        // padding-top:1.5rem;
+        .title{
+          text-align: left;
+          font-size: 0.64rem;
+          hegiht:1.7rem;
+          line-height: 1.7rem;
+          border-bottom: 1px solid @gray-light;
+          padding: 0 0.64rem;
+          .edit{
+            display:block;
+            img{
+                display:block;
+                width: 1rem;
+                height: 1rem;
+                background: #ffad3d;
+            }
+          }
+        }
+        .pro_list{
+        }
+      }
+    }
+  }
+    /*::-webkit-input-placeholder{*/
+         /*font-size: 0.512rem;*/
+    /*}*/
+
+</style>

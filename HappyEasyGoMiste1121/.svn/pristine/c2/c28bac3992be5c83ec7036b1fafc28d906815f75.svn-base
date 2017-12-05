@@ -1,0 +1,208 @@
+<template>
+	<div id="menu" class="menu" @touchstart="hideMenu" @touchmove="touchend">
+		<div class="menu-cont">
+			<div class="menu-user flex direction-column content-center align-items-center">
+				<div class="user-img">
+					<img v-if="!isLogin" :src="require('../../assets/images/menu/Navbar_03.png')" alt="">
+					<img v-else :src="require('../../assets/images/menu/usericon.png')" alt="">
+				</div>
+				<div class="user-login">
+					<span v-show="!isLogin" @click="login">Log in/Sign up</span>
+					<span v-show="isLogin">{{user.emailAddress}}</span>
+				</div>
+			</div>
+			<div class="menu-list">
+				<ul>
+					<li class="flex space-between"  @click="$router.push('/search')">
+						<span>My Trips</span>
+						<span class="ico"></span>
+					</li>
+					<li class="flex space-between" @click="wallet">
+						<span>Happy Wallet</span>
+						<span class="ico"></span>
+					</li>
+					<li class="flex space-between" @click="profile">
+						<span>My Profile</span>
+						<span class="ico"></span>
+					</li>
+					<li class="flex space-between" @click="$router.push('/about')">
+						<span>About us</span>
+						<span class="ico"></span>
+					</li>
+					<li class="flex space-between" @click="$router.push('/contact')">
+						<span>Contact us</span>
+						<span class="ico"></span>
+					</li>
+					<li class="flex space-between" @click="$router.push('/feedback')">
+						<span>Feedback</span>
+						<span class="ico"></span>
+					</li>
+					<li class="flex space-between" @click="$router.push('/offer')">
+						<span>offers</span>
+						<span class="ico"></span>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+	import login from '../login/login.vue'
+	import { CookieUtil } from '../../models/utils' 
+
+	export default{
+		components:{
+			login
+		},
+		data(){
+			return {
+				showMenu:false,
+				showLogin:true,
+				startX:0,
+				endX:0,
+			}
+		},
+		computed:{
+			user(){
+				console.log(this.$store.getters.userInfo);
+				return this.$store.getters.userInfo ? this.$store.getters.userInfo : '';
+			},
+			isLogin(){
+				let cu = new CookieUtil(document);
+				return cu.hasItem('uuid') ? true : false;
+			}
+		},
+		methods:{
+			hideMenu(e){
+				let touch=e.targetTouches[0];
+				this.startX = touch.pageX;
+				let oWidth=$('.menu-cont').css('width').replace(/[^\d\.]/g,'');
+				if(touch.pageX>oWidth){
+					setTimeout(()=>{
+						this.$emit('closeMenu',this.showMenu);
+					},20)
+				}
+			},
+			touchend(e){
+				let touch=e.targetTouches[0];
+				this.endX = touch.pageX;
+				let abs = Math.abs(this.endX - this.startX);
+				if(this.endX < this.startX && abs >= 30){
+					this.$emit('closeMenu',this.showMenu);
+				}
+			},
+			wallet(){
+				let cu = new CookieUtil(document)
+                if (cu.hasItem('uuid')) {
+                    this.$router.push('/happywallet')
+                } else {
+                    this.$emit('isLogin');
+                }
+			},
+			profile(){
+				let cu = new CookieUtil(document)
+                if (cu.hasItem('uuid')) {
+                     this.$router.push('/profile')
+                } else {
+                    this.$emit('isLogin');
+                }
+			},
+			login(){
+				this.$emit('isLogin');
+			}
+		},
+		mounted(){
+
+		}
+	}
+</script>
+<style lang="less" scoped>
+	.menu{
+		width:100%;
+		height:100%;
+		background-color:transparent;
+		position:fixed;
+		z-index:20;
+		.menu-cont{
+			width:70%;
+			height:100%;
+			background-color:#343642;
+			padding-left:0.68rem;
+			.menu-user{
+				padding-top:2.77rem;
+				.user-img{
+					text-align:left;
+					img{
+						width:3.2rem;
+					}
+				}
+				.user-login{
+					padding:0.2rem 0;
+					span{
+						color:#d5923e;
+						font-size:0.6rem;
+					}
+				}
+			}
+		}
+		.menu-list{
+			padding-top:1rem;
+			ul{
+				padding-right:0.68rem;
+				li{
+					text-align:left;
+					font-size:0.6rem;
+					color:#fff;
+					border-bottom:1px solid #595868;
+					a,span{
+						display:inline-block;
+						margin-left:1.7rem;
+						padding:0.6rem 0;
+						color:#fff;
+					}
+					.ico{
+						width:0.6rem;
+						padding:0.6rem 0;
+						margin-right:0.4rem;
+						display:list-item;
+						background:url('../../assets/images/ic-btn-one.png') center no-repeat;
+						background-size:0.4rem;
+					}
+				}
+				.active{
+					color:#0b9d78;
+				}
+		}
+		}
+	}
+	.menu-list li:nth-child(1){
+		background:url('../../assets/images/menu/Navbar_07.png') left center no-repeat;
+		background-size:0.98rem;
+	}
+	.menu-list li:nth-child(2){
+		background:url('../../assets/images/menu/Navbar_10.png') left center no-repeat;
+		background-size:0.98rem;
+	}
+	.menu-list li:nth-child(3){
+		background:url('../../assets/images/menu/Navbar_13.png') left center no-repeat;
+		background-size:0.98rem;
+	}
+	.menu-list li:nth-child(4){
+		background:url('../../assets/images/menu/Navbar_15.png') left center no-repeat;
+		background-size:0.98rem;
+	}
+	.menu-list li:nth-child(5){
+		background:url('../../assets/images/menu/Navbar_17.png') left center no-repeat;
+		background-size:0.98rem;
+	}
+	.menu-list li:nth-child(6){
+		background:url('../../assets/images/menu/feedback_03.png') left center no-repeat;
+		background-size:0.98rem;
+	}
+	.menu-list li:nth-child(7){
+		background:url('../../assets/images/menu/offers1_03.png') left center no-repeat;
+		background-size:0.98rem;
+	}
+
+	
+</style>

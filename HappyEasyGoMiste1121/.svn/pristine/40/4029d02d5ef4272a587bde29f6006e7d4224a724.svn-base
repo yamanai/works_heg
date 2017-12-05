@@ -1,0 +1,392 @@
+<template>
+  <div id="my_profile">
+    <head-top class="header">
+      <i slot="left" class="prev iconfont icon-back" @click="$router.go(-1)"></i>
+      <div slot="title" class="title">My Profile</div>
+      <i slot="right" class="sp iconfont icon-back"></i>
+    </head-top>
+    <div class="mp_container">
+      <div class="mp_info ">
+        <div class="mp_avatar flex content-center">
+          <div class="avatar">
+            <img :src="require('../../assets/images/profile/after.png')" alt="">
+          </div>
+        </div>
+        <div class="info_text">
+          <span class="name">{{username}}</span>
+        </div>
+
+      </div>
+      <div class="pro_info">
+        <div class="title flex space-between">
+          <span>Personal Info</span>
+          <a class="edit" :class="{colorPri: isActive, grayDark: !isActive}" @click="changeInfo">Save</a>
+        </div>
+        <div class="pro_list">
+
+          <div class="mint-cell mint-field sexBox">
+            <div class="mint-cell-wrapper flex align-items-center">
+              <div class="mint-cell-title">
+                <div class="mint-cell-text">
+                  First Name
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="email" name="email" v-model="profile.firstName" placeholder="Input your First Name">
+              </div>
+            </div>
+          </div>
+
+          <div class="mint-cell mint-field sexBox">
+            <div class="mint-cell-wrapper flex align-items-center">
+              <div class="mint-cell-title">
+                <div class="mint-cell-text">
+                  Last Name
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="email" name="email" v-model="profile.lastName" placeholder="Input your Last Name">
+              </div>
+            </div>
+          </div>
+
+          <div class="mint-cell mint-field sexBox">
+            <div class="mint-cell-wrapper flex align-items-center">
+              <div class="mint-cell-title">
+                <div class="mint-cell-text">
+                  Gender
+                </div>
+              </div>
+              <div class="sex">
+                <input type="radio" name="sex" value="0" v-model="profile.sex"> Male
+                <input type="radio" name="sex" value="1" v-model="profile.sex"> Female
+              </div>
+            </div>
+          </div>
+
+          <div class="mint-cell mint-field sexBox">
+            <div class="mint-cell-wrapper flex align-items-center">
+              <div class="mint-cell-title">
+                <div class="mint-cell-text">
+                  Email
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="email" name="email" v-model="profile.email" placeholder="Input your Email Address">
+              </div>
+            </div>
+          </div>
+
+          <div class="mint-cell mint-field sexBox">
+            <div class="mint-cell-wrapper flex align-items-center">
+              <div class="mint-cell-title">
+                <div class="mint-cell-text">
+                  Mobile No.
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="text" name="phone" v-model="profile.cellphone" placeholder="Input your Phone Number">
+              </div>
+            </div>
+          </div>
+
+          <div class="mint-cell mint-field sexBox">
+            <div class="mint-cell-wrapper flex align-items-center">
+              <div class="mint-cell-title">
+                <div class="mint-cell-text">
+                  Date of birth
+                </div>
+              </div>
+              <div class="form-group">
+                <span class="birth-wrap">
+                  {{profile.birthDate||"Input your BirthDate"}}
+                  <input class="birth" type="date" name="birth" v-model="profile.birthDate" placeholder="Input your Date of birth">
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mint-cell mint-field sexBox">
+            <div class="mint-cell-wrapper flex align-items-center">
+              <div class="mint-cell-title">
+                <div class="mint-cell-text">
+                  User ID
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="text" name="userid" v-model="profile.userId" placeholder="Input your User ID" disabled="disabled">
+              </div>
+            </div>
+          </div>
+
+          <div class="mint-cell mint-field sexBox">
+            <div class="mint-cell-wrapper flex align-items-center">
+              <div class="mint-cell-title">
+                <div class="mint-cell-text">
+                  Address
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="input" name="userid" rows="4" v-model="profile.address" placeholder="Input your Address">
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import headTop from '../../components/head/head.vue'
+import { CookieUtil } from '../../models/utils'
+import { User } from '../../models/user'
+import { loginUserInfo } from '../../vuex/models/user/XUser.js'
+import { DomainManager } from '../../config/DomainManager.js'
+import { Toast, Indicator } from 'mint-ui';
+
+export default {
+  components: {
+    headTop
+  },
+  data() {
+    return {
+      user: Object,
+      showPro: false,
+      // profileInfo: {
+      //   firstName: '',
+      //   lastName: '',
+      //   cellphone: '',
+      //   email: '',
+      //   sex: null,
+      // },
+      // isActive: false,
+      userPW: {
+        password: '',
+        newPassword: ''
+      },
+      newPasswordRP: '',
+      infoArr: Array,
+      // sexOptions:[
+      //   {
+      //     label:'Male',
+      //     vaule: 0
+      //   },
+      //   {
+      //     label: 'Female',
+      //     vaule: 1
+      //   }
+      // ]
+
+    }
+  },
+  computed: {
+    username() {
+      if (this.user.firstName == null && this.user.lastName == null) {
+        return this.user.email;
+      } else {
+        return this.user.firstName + " " + this.user.lastName
+      }
+    },
+    profile() {
+      return this.user;
+    }
+  },
+  watch: {
+    profile(val) {
+      this.isActive = true;
+    }
+  },
+  created() {
+    this.getUser()
+  },
+  methods: {
+    getUser() {
+      let cu = new CookieUtil(document)
+      let self = this;
+      if (cu.hasItem("uuid")) {
+        User.loadUser(self)
+          .then(user => {
+            self.$nextTick(() => {
+              self.user = user;
+              self.$store.commit(loginUserInfo, user)
+            })
+          })
+          .catch(err => { console.log(err) })
+      } else {
+        console.log('error');
+      }
+    },
+    changeInfo() {
+      if (!this.isActive) return;
+      let self = this;
+      let infoString = '';
+      for (let v in this.profile) {
+        console.log(v, this.profile[v])
+        if (this.profile[v] != undefined) {
+          infoString += v + '=' + this.profile[v] + '&';
+        }
+      }
+      console.log(infoString)
+
+      User.changeUserInfo(this, infoString).then(function(res) {
+        if (res.success) {
+          Toast({
+            message: 'success',
+            duration: 1500
+          })
+        } else {
+          Toast({
+            message: res.msg,
+            duration: 1500
+          })
+        }
+      });
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+/*::-webkit-input-placeholder{*/
+
+
+/*font-size: 0.512rem;*/
+
+
+/*}*/
+
+// @import "./content.less";
+@import "../../assets/less/theme.less";
+#my_profile {
+  .header {
+    background: #0b9d78;
+    .title {
+      font-size: 0.768rem;
+      color: #fff;
+    }
+    .sp {
+      opacity: 0;
+    }
+  }
+  .mp_container {
+    // padding: 0 1.28rem;
+    // height: 10rem;
+    // background: url("../../assets/images/profile/user-bg2.png") 0 0 no-repeat;
+    background-size: cover;
+    .mp_info {
+      padding-top: 2.04rem;
+      background-color: @primary-color;
+      .mp_avatar {
+        padding-top: 0.6rem;
+        padding-bottom: 0.34rem;
+        .avatar {
+          width: 4rem;
+          height: 4rem;
+          border-radius: 50%;
+          img {
+            width: 100%;
+          }
+        }
+      }
+      .info_text {
+        padding: 0.8rem 0;
+        span {
+          display: block;
+          line-height: 1.5;
+          height: 1rem;
+          color: #ffffff;
+          font-size: 0.64rem;
+        }
+        .tel {
+          font-size: 0.512rem;
+        }
+      }
+      .change_info {
+        a {
+          display: inline-block;
+          padding: 0 0.2rem;
+          img {
+            display: inline-block;
+            width: 0.7rem;
+            height: 0.7rem;
+          }
+        }
+      }
+    }
+    .wave-img {
+      width: 100%;
+      height: 1rem;
+    }
+    .pro_info {
+      // padding-top:1.5rem;
+      .title {
+        text-align: left;
+        font-size: 0.64rem;
+        height: 1.7rem;
+        line-height: 1.7rem;
+        border-bottom: 1px solid @gray-light;
+        padding: 0 0.64rem;
+        .edit {
+          display: block;
+        }
+      }
+      .pro_list {
+        padding: 0 0.64rem 1rem 0.64rem;
+        text-align: left;
+        .mint-cell {
+          min-height: 1.7rem;
+          font-size: 16px;
+          .mint-cell-wrapper {
+            width: 100%;
+            .sexBox {
+              display: flex;
+              justify-content: flex-start;
+            }
+            .sex {
+              padding: .3rem;
+            }
+            .form-group {
+              height: 1.3rem;
+              width: 100%;
+              input {
+                font-size: 0.64rem;
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+                padding: 0.3rem;
+              }
+              .birth-wrap {
+                display: block;
+                width: 100%;
+                height: 100%;
+                position: relative;
+                box-sizing: border-box;
+                padding: .3rem;
+                margin-top: 0.05rem;
+                font-size: 0.64rem;
+                .birth {
+                  opacity: 0;
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.mint-cell-wrapper {
+  -webkit-box-align: center;
+  -moz-align-items: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+</style>

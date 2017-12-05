@@ -1,0 +1,215 @@
+<template>
+    <div class="wrapper">
+        <head-top class="header">
+            <i slot="left" class="prev iconfont icon-back" @click="$router.go(-1)"></i>
+            <div slot="title" class="title">Top-up</div>
+            <i slot="right" class="sp iconfont icon-back"></i>
+        </head-top>
+        <div class="container">
+            <div class="content">
+                <div class="form-group">
+                    <label for="">Cardholder's Name</label>
+                    <input type="text" v-model="info.name">
+                </div>
+                <div class="form-group">
+                    <label for="">Top-up Amount(Every recharge amount cannot be over
+                        <span class="rs">.Rs</span>500,000)</label>
+                    <input type="text" v-model="info.amount">
+                </div>
+                <div class="form-group">
+                    <label for="">Email</label>
+                    <input type="email" v-model="info.email">
+                </div>
+                <div class="form-group">
+                    <label for="">Mobile No.</label>
+                    <input type="text" v-model="info.phone">
+                </div>
+                <p>Top-up more than Rs.5000, you will be rewarded extra 1% Happy Gold e-cash.</p>
+                <a class="btn" href="javascript:;" @click="addRechargeRequest()">Submit</a>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+import headTop from '../../components/head/head.vue'
+import { User } from 'models/user'
+import { Toast } from 'mint-ui'
+import { CookieUtil } from '../../models/utils'
+import { makePayment } from '../../models/flightorder'
+import { GetFlightOrderUtil } from '../../models/utils'
+
+export default {
+    components: {
+        headTop
+    },
+    data() {
+        return {
+            info: {
+                name: '',
+                amount: '',
+                email: '',
+                phone: ''
+            },
+            showEmail: false,
+            userEmail: ''
+        }
+    },
+    methods: {
+        addRechargeRequest() {
+            if (this.isCookie()) {
+                if (!this.info.amount || !this.info.email || !this.info.phone) {
+                    Toast({
+                        message: 'error',
+                        duration: 1500
+                    })
+                    return false;
+                }
+                // let nreg = /[^a-zA-Z]+/g;
+                let mreg = /^\d+$/g;
+                let ereg = /^(([0-9a-zA-Z]+)|([0-9a-zA-Z]+[_.0-9a-zA-Z-]*[0-9a-zA-Z]+))@([a-zA-Z0-9-]+[.])+([a-zA-Z]{2}|net|NET|com|COM|gov|GOV|mil|MIL|org|ORG|edu|EDU|int|INT)$/;
+                let areg = /^(-)?[1-9][0-9]*$/;
+                // let areg = /^\+?[1-9][0-9]*$/;
+                // if (!nreg.test(this.info.name)) {
+                //     Toast({
+                //         message: 'Please enter correct Name',
+                //         duration: 1000
+                //     })
+                //     return false;
+                // }
+                if (!areg.test(this.info.amount)) {
+                    Toast({
+                        message: 'Please enter correct Amount',
+                        duration: 1000
+                    })
+                    return false;
+                }
+                if (this.info.amount > 500000) {
+                    Toast({
+                        message: 'Every recharge amount cannot be over 500000',
+                        duration: 1000
+                    })
+                    return false;
+                }
+                if (!ereg.test(this.info.email)) {
+                    Toast({
+                        message: 'Please enter correct Email Adress',
+                        duration: 1000
+                    })
+                    return false;
+                }
+                if (!mreg.test(this.info.phone)) {
+
+                    Toast({
+                        message: 'Mobile number is invalld',
+                        duration: 1000
+                    })
+                    return false;
+
+                }
+
+                if (this.info.phone.length < 8) {
+                    Toast({
+                        message: 'Mobile number is invalld',
+                        duration: 1000
+                    })
+                    return false;
+                }
+
+
+                let str = '';
+                for (var v in this.info) {
+                    str += v + '=' + this.info[v] + '&'
+                }
+
+                str += 'returnUrl=https://m1.happyeasygo.com/happywallet';
+
+                User.rechargeWallet(this, str).then((res) => {
+                    if (res.success) {
+                        // res.msg.returnUrl = 'https://m1.happyeasygo.com/happywallet';
+                        User.makePayment(window, res.msg)
+                    }
+                    console.log(res)
+                })
+            } else {
+                Toast({
+                    message: 'need Login'
+                })
+            }
+        },
+        isCookie() {
+            let cu = new CookieUtil();
+            if (cu.hasItem('uuid')) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+    created() {
+
+    },
+    mounted() {
+        let self = this;
+        if (this.isCookie) {
+            User.loadUser(this).then(function(res) {
+                if (res.email != '') {
+                    self.info.email = res.email;
+                }
+            })
+        }
+    }
+}
+</script>
+<style lang='less' scoped>
+.wrapper {
+    .header {
+        background: #0b9d78;
+        .title {
+            color: #fff;
+            font-size: 0.769rem;
+        }
+        .sp {
+            opacity: 0;
+        }
+    }
+    .container {
+        .content {
+            padding: 2.68rem 0.64rem 0 0.64rem;
+            .form-group {
+                width: 100%;
+                margin-bottom: 0.64rem;
+                text-align: left;
+                label {
+                    display: block;
+                    font-size: 0.64rem;
+                    margin-bottom: 0.3rem;
+                }
+                input {
+                    border: 1px solid #ddd;
+                    box-sizing: border-box;
+                    display: block;
+                    width: 100%;
+                    padding: 0.32rem 0.64rem;
+                    font-size: 0.64rem;
+                }
+                span {
+                    font-size: 0.64rem;
+                }
+            }
+            p {
+                font-size: 0.512rem;
+                text-align: left;
+                margin-bottom: 0.64rem;
+            }
+            .btn {
+                display: block;
+                width: 100%;
+                color: #fff;
+                background: #ffad3d;
+                font-size: 0.64rem;
+                line-height: 1.5rem;
+            }
+        }
+    }
+}
+</style>
