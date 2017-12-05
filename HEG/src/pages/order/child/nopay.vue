@@ -1,0 +1,537 @@
+<template>
+	<div class="wrapper">
+		<head-top class="head">
+			<i slot="left" class="iconfont icon-back" @click="$router.go(-1)"></i>
+			<div slot="title" class="title flex" v-for="(item,index) in orders" v-if="index==0" :key="item.id">
+				<h2>{{departCity}}</h2>
+				<div class="title-img">
+					-
+				</div>
+				<h2>{{ariveCity}}</h2>
+			</div>
+			<i class="sp iconfont icon-back" slot="right"></i>
+		</head-top>
+		<div class="container">
+			<div class="content">
+				<div class="flight-info">
+					<div class="dates" v-show="ispasetime">
+						<h2>
+							<span>Fares change rapidly</span>
+						</h2>
+						<p class="sp">It will take a few minutes to process your payment. If you have completed payment, please do not make payment again.</p>
+						<p>So please complete the</p>
+						<p>Payment process before
+							<span>{{expirationTime}}(IST)</span>
+						</p>
+						<p class="tripid">
+							Trip Id:{{orderInfo.id}}
+						</p>
+					</div>
+					<flight-info :orders="orders"></flight-info>
+					<bg></bg>
+					<fareDetail :orders="orders" :fee="fee"></fareDetail>
+					<!-- <orderAction :orders="orders" v-show="showAction"></orderAction> -->
+				</div>
+				<div class="use-gold">
+					<div class="offers-group" v-if="isLogin&&showPay">
+						<div class="radio-group-sp align-items-center " @click="radio">
+							<!-- <a class="recharge-tips " @click="$router.push( '/recharge') ">Top up now and get extra 1% discount</a> -->
+							<div class="ug flex content-start align-items-center " v-if="this.sesessionStorageUser.payPassword !='' ">
+								<div class="round1 ">
+									<div :class="{round2:isSelect} "></div>
+								</div>
+								<p :class="{yellow:isSelect} ">Use my Happy Gold
+									<span>Rs.{{goldTotal}}</span>
+								</p>
+							</div>
+							<div class="log " v-else>
+								<p>you need to
+									<a href="javascript:; " @click="$router.push( '/security') ">reset</a>your payPassword</p>
+							</div>
+
+						</div>
+						<div class="input-group flex content-start align-items-center " v-show="isSelect ">
+							<input type="number " ref="gold " v-model.number="goldVal">
+							<p>Please input happygold amount here</p>
+						</div>
+						<div class="input-group flex content-start align-items-center " v-show="isSelect ">
+							<input type="password" placeholder="Payment password" v-model="password ">
+						</div>
+						<p v-show="isSelect ">Know more about Happy Gold</p>
+						<span class="fp " v-show="isSelect " @click="$router.push( '/forgotpay') ">forgot password?</span>
+						<div class="otp-info" v-show="isSelect&&!needOtp2rd">
+							<div class="phone flex space-between">
+								<input type="number" placeholder="your phone number" v-model.number="rePhone" v-if="!hasPhone">
+								<span v-else>Tel: {{userPhone}}
+								</span>
+								<a class="send" href="javascript:;" @click="getOtp()">{{submit}}</a>
+							</div>
+							<div class="form-group">
+								<input type="text" placeholder="please input Otp code" v-model="otp">
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<payment class="payment " :orderDetail="orderDetail" :fee="fee" :ispasetime="showPay" :orders="orders" :isSelect="isSelect" :goldVal="goldVal" :otp="otp" :password="password" :phone="rePhone"></payment>
+	</div>
+</template>
+<script>
+import headTop from '../../../components/head/head.vue'
+import payment from './base/payment.vue'
+import flightInfo from './base/flightInfo.vue'
+import traveller from './base/traveller.vue'
+import fareDetail from './base/fareDetail'
+import { CookieUtil, GetFlightOrderUtil } from '../../../models/utils'
+import { User } from '../../../models/user'
+import { Toast } from 'mint-ui'
+// import orderAction from './base/orderAction'
+// import orderRtAction from './base/orderRtAction'
+
+import bg from './base/bg.vue'
+
+export default {
+	components: {
+		headTop,
+		payment,
+		flightInfo,
+		traveller,
+		fareDetail,
+		bg,
+	},
+	data() {
+		return {
+			orders: [],
+			fee: '',
+			ifPay: '',
+			showAction: false,
+			isSelect: false,
+			password: '',
+			goldTotal: 0,
+			goldVal: 0,
+			userPhone: '',
+			needOtp2rd: false,
+			otp: '',
+			submit: 'Send',
+			rePhone: '',
+			hasPhone: false,
+			orderDetail: ''
+		}
+	},
+	computed: {
+		grandTotal() {
+			if (this.isSelect) {
+				return this.fee.pp - this.goldVal;
+			} else {
+				return this.fee.pp;
+			}
+		},
+		sesessionStorageUser() {
+			if (sessionStorage.user) {
+				return JSON.parse(sessionStorage.user);
+			} else {
+				return false;
+			}
+		},
+		isLogin() {
+			return Boolean((new CookieUtil()).getItem('uuid'));
+		},
+		orderInfo() {
+			if (this.orders) {
+				return this.orders[0];
+			} else {
+				return ''
+			}
+		},
+		ispasetime() {
+			if (this.orders.length != 0) {
+				let creatTime = new Date(this.orders[0].creatTime + 15 * 60 * 1000).getTime();
+				let curTime = new Date().getTime();
+				return creatTime > curTime ? true : false;
+			}
+
+		},
+		showPay() {
+			return this.ifPay == 107 ? true : false;
+		},
+		expirationTime() {
+			let creatTime = null;
+			if (this.orders.length > 0) {
+				creatTime = new Date(this.orders[0].creatTime);
+				let year = creatTime.getFullYear();
+				let month = creatTime.getMonth() + 1;
+				let date = creatTime.getDate();
+				let hour = creatTime.getHours();
+				let minute = creatTime.getMinutes() + 15;
+				// let minute = creatTime.getMinutes();
+
+				let second = creatTime.getSeconds();
+				if (minute > 59) {
+					minute -= 59;
+					hour += 1;
+					if (hour > 24) {
+						hour = 0;
+					}
+				}
+				return (date + '/' + month + '/' + year + ',' + hour + ':' + minute + ':' + second)
+			}
+		},
+		departCity() {
+			if (this.orders.length != 0) {
+				return this.orders[0].voyageinfo[0].dc;
+			}
+		},
+		ariveCity() {
+			if (this.orders.length != 0) {
+				return this.orders[0].voyageinfo[this.orders[0].voyageinfo.length - 1].ac;
+			}
+		}
+	},
+	watch: {
+		goldVal(newValue) {
+			if (this.isSelect) {
+				var totalAmount = 0;
+				this.orders[1] ? totalAmount = this.orders[0].price + this.orders[1].price : totalAmount = this.orders[0].price;
+				if (newValue < 0) { newValue = 0 }
+				this.goldVal = Math.min.apply(null, [newValue, totalAmount, this.fee.pp]);
+			}
+		}
+	},
+	created() {
+		this.orders = JSON.parse(sessionStorage.getItem('orders'));
+		this.fee = JSON.parse(sessionStorage.getItem('orderFee')).fee;
+		this.needOtp2rd = JSON.parse(sessionStorage.getItem('orderFee')).hasVerifiedOtp;
+		this.orderDetail = JSON.parse(sessionStorage.getItem('orderFee'));
+		this.ifPay = this.orders[0].ticketsinfo[0][0].status;
+
+		console.log(this.orderDetail.hasPhone)
+
+		this.hasPhone = this.orderDetail.hasPhone;
+
+		User.getGold(this).then(res => {
+			this.goldTotal = Number(res.happyGoldBalance);
+		})
+
+		if (sessionStorage.user) {
+			this.userPhone = JSON.parse(sessionStorage.user).cellphone;
+		}
+	},
+	methods: {
+		isEnter() {
+			for (var i in this.orders) {
+				for (var y in this.orders[i].travellerinfo) {
+					if (this.orders[i].travellerinfo[y].status == 1 && this.orders[0].ticketsinfo[0][0].ticketno) {
+						this.showAction = true;
+					}
+				}
+			}
+		},
+		radio() {
+			this.isSelect = !this.isSelect;
+			if (this.isSelect) {
+				if (this.fee.pp <= this.goldTotal) {
+					this.goldVal = this.fee.pp;
+				} else if (this.fee.pp > this.goldTotal) {
+					this.goldVal = this.goldTotal;
+				}
+			} else {
+				this.goldVal = 0;
+			}
+		},
+		getOtp() {
+			var self = this;
+			if (self.submit != 'Send') {
+				return false;
+			}
+			var phone = '';
+
+			if (!this.hasPhone) {
+				phone = 'phone=' + this.rePhone;
+				var pl = this.rePhone + '';
+				if (pl.length < 10) {
+					Toast('please input correct phone number');
+					return false;
+				}
+			}
+			User.getGSOtp(this, phone).then(res => {
+				if (res.code == 2) {
+					Toast({
+						message: res.msg,
+						duration: 2000
+					})
+					return false;
+				}
+				if (res.success) {
+					var btn = document.querySelector('.send');
+					btn.style.backgroundColor = '#ccc';
+					if (self.submit == 'Send') {
+						self.submit = 60
+					}
+					self.submit = res.lastSendTime;
+
+					var stop = setInterval(function() {
+						if (self.submit > 1) {
+							self.submit--;
+						} else {
+							clearInterval(stop);
+							btn.style.backgroundColor = '#ffa033';
+							self.submit = 'Send';
+						}
+					}, 1000)
+				} else {
+					Toast('error')
+				}
+			})
+		}
+	},
+	mounted() {
+		this.isEnter();
+	}
+}
+</script>
+<style lang="less" scoped>
+.head {
+	background: #0b9d78!important;
+	.title {
+		h2 {
+			font-size: 0.768rem;
+			color: #fff;
+		}
+		.title-img {
+			width: 1.2rem;
+			height: 2.04rem;
+			line-height: 2.04rem;
+			padding: 0 0.2rem;
+			img {
+				margin-top: 4px;
+				width: 1rem;
+			}
+		}
+	}
+	.sp {
+		opacity: 0;
+	}
+}
+
+.container {
+	overflow: auto;
+	.content {
+		padding: 2.1rem 0.68rem 0rem;
+		.use-gold {
+			padding-bottom: 4rem;
+			.offers-group {
+				font-size: 0.6rem;
+				color: #ccc;
+				text-align: left;
+				background-color: #fff;
+				border-radius: 0.2rem;
+				padding: 0.426rem 0;
+				.radio-group-sp {
+					.recharge-tips {
+						text-align: center;
+						margin-bottom: 0.3rem;
+						display: block;
+						padding: 0.3rem;
+						background: #17a27f;
+						color: #fff;
+						border-radius: 4px;
+					}
+					.ug {
+						padding-bottom: 0.2rem;
+						.round1 {
+							width: 0.6rem;
+							height: 0.6rem;
+							border: 1px solid #ccc;
+							position: relative;
+							margin-right: 0.3rem;
+							.round2 {
+								width: 70%;
+								height: 70%;
+								background-color: #ffa033;
+								position: absolute;
+								top: 50%;
+								left: 50%;
+								transform: translateY(-50%) translateX(-50%);
+								-webkit-transform: translateY(-50%) translateX(-50%);
+							}
+						}
+					}
+					.log {
+						width: 100%;
+						text-align: center;
+						p {
+							a {
+								color: #17a27f;
+								padding-right: 0.15rem;
+							}
+						}
+					}
+				}
+				.input-group {
+					margin-bottom: 0.3rem;
+					input {
+						display: block;
+						box-sizing: border-box;
+						height: 1.75rem;
+						width: 50%;
+						font-size: 0.68rem;
+						padding: 0.3rem 0.3rem;
+						border: 1px solid #ccc;
+						border-radius: 0;
+						text-indent: 0;
+					}
+					p {
+						width: 50%;
+						padding-left: 0.5rem;
+						box-sizing: border-box;
+					}
+					.yellowborder {
+						border: 1px solid #ffa033;
+					}
+					a {
+						box-sizing: border-box;
+						height: 1.75rem;
+						line-height: 1.75rem;
+						width: 4.05rem;
+						font-size: 0.68rem;
+						/*padding:0.3rem 0;*/
+						text-align: center;
+						color: #fff;
+						display: block;
+					}
+					.cheked {
+						background-color: #ffa033;
+					}
+					.disable {
+						background-color: #ccc;
+					}
+				}
+				.fp {
+					color: #17a27f;
+					padding-top: 0.21rem;
+				}
+				.otp-info {
+					.phone {
+						text-align: left;
+						margin-bottom: 0.64rem;
+						margin-top: 0.64rem;
+						input {
+							width: 100%;
+							font-size: 0.68rem;
+							line-height: 1.49rem;
+							border: 1px solid #ddd;
+							box-sizing: border-box;
+							padding: 0 0.32rem;
+							border-right: none;
+							border-top-right-radius: 0;
+							border-bottom-right-radius: 0;
+						}
+						span {
+							color: #000;
+							width: 70%;
+							font-size: 0.68rem;
+							line-height: 1.49rem;
+						}
+						a {
+							display: block;
+							text-align: center;
+							width: 30%;
+							line-height: 1.49rem;
+							background: #ffa033;
+							color: #fff;
+							font-size: 0.68rem;
+						}
+					}
+					.form-group {
+						height: 1.49rem;
+						margin-bottom: 0.64rem;
+						input {
+							display: block;
+							height: 1.49rem;
+							line-height: 1.49rem;
+							width: 100%;
+							border: 1px solid #ddd;
+							padding: 0 0.32rem;
+							font-size: 0.68rem;
+							box-sizing: border-box;
+						}
+					}
+				}
+			}
+		}
+	}
+	.flight-info {
+		.dates {
+			// padding-bottom: 0.8rem;
+			h2 {
+				font-size: 0.68rem;
+				color: #333;
+				padding: 0.2rem 0;
+				span {
+					// padding-left: 1.2rem;
+					// background: url('../../../assets/images/order/paid_03.png') left no-repeat;
+					background-size: 0.68rem;
+				}
+			}
+			.sp {
+				color: red;
+			}
+			p {
+				// text-align: left;
+				font-size: 0.52rem;
+				color: #666;
+				padding-top: 0.2rem;
+				span {
+					font-size: 0.56rem;
+					color: #333;
+				}
+			}
+			.tripid {
+				display: none;
+				padding-top: 0.4rem;
+				text-align: left;
+				padding-bottom: 0.2rem;
+			}
+		}
+	}
+	.traveller {
+		background-color: #fff;
+		border-radius: 0.4rem;
+		margin-top: 0.6rem;
+		.title {
+			h2 {
+				font-size: 0.6rem;
+				color: #333;
+				text-align: left;
+				span {
+					font-size: 0.68rem;
+					padding: 0 0.2rem;
+				}
+			}
+		}
+		ul>li {
+			h2 {
+				font-size: 0.6rem;
+				color: #333;
+				text-align: left;
+				padding: 0.4rem 0;
+				span {
+					padding-right: 0.2rem;
+				}
+			}
+		}
+	}
+}
+
+.payment {
+	position: fixed;
+	bottom: 0;
+	-webkit-overflow-scrolling: touch;
+}
+
+.pasetime {
+	background-color: #ccc!important;
+}
+</style>

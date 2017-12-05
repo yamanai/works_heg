@@ -1,0 +1,47 @@
+import Vue from "vue";
+import Vuex from "vuex";
+import App from "./App.vue";
+import router from "./router";
+import resource from "vue-resource";
+// import Mint from 'mint-ui'
+import filters from "./filter/filter.js";
+import { FontUtil } from "./models/utils";
+import {
+  Field,
+  Button,
+  Popup,
+  DatetimePicker,
+  Picker,
+  Range,
+  Radio
+} from "mint-ui";
+import { store } from "./vuex";
+
+// const FastClick = require("fastclick");
+// FastClick.attach(document.body);
+
+Vue.component(DatetimePicker.name, DatetimePicker);
+Vue.component(Picker.name, Picker);
+Vue.component("mt-button", Button);
+Vue.component("mt-range", Range);
+Vue.component("mt-popup", Popup);
+Vue.component("mt-radio", Radio);
+Vue.component(Field.name, Field);
+Vue.use(resource);
+// Vue.use(Mint);
+Vue.filter("formatDate", filters.formatDate);
+FontUtil.init();
+var vm = new Vue({
+  el: "#app",
+  store,
+  router,
+  methods: {
+    onLoadFinish() {
+      window.heg && window.heg.onViewShow();
+    }
+  },
+  mounted() {
+    this.onLoadFinish();
+  },
+  render: h => h(App)
+});

@@ -1,0 +1,167 @@
+<template>
+  <div id="my_profile">
+  	<head-top class="header">
+  		<img slot="left" :src="require('../../assets/images/prevs.png')" class="prev" @click="$router.go(-1)">
+  		<div slot="title" class="title">Profile</div>
+	  </head-top>
+    <div class="mp_container">
+      <div class="mp_info ">
+        <div class="mp_avatar flex content-center">
+          <div class="avatar">
+            <img :src="require('../../assets/images/menu/usericon.png')" alt="">
+          </div>
+        </div>
+        <div class="info_text">
+            <span class="name">{{username}}</span>
+        </div>
+        <!-- <div class="wave-img">
+          
+        </div> -->
+      </div>        
+      <div class="pro_info">
+        <div class="title flex space-between">
+          <span>Personal Info</span>
+          <a class="edit" :class="{colorPri: isActive, grayDark: !isActive}" @click="changeInfo">Save</a>
+        </div>
+        <div class="pro_list">
+          <mt-field label="First Name" placeholder="Input your username" v-model="profile.firstName"></mt-field><mt-field label="Last Name" placeholder="Input your username" v-model="profile.lastName"></mt-field>
+          <div class="mint-cell mint-field sexBox">
+            <div class="mint-cell-wrapper">
+              <div class="mint-cell-title">
+                <div class="mint-cell-text">
+                  Gender
+                </div>
+              </div>
+              <div class="sex">
+                <input type="radio" name="sex" value="0" v-model="profile.sex"> Male
+                <input type="radio" name="sex" value="1" v-model="profile.sex"> Female
+              </div>
+            </div>
+          </div>
+          <mt-field label="E-mail" placeholder="Input your username" v-model="profile.email"></mt-field>      
+          <mt-field label="Mobile No." placeholder="Input your username" v-model="profile.cellphone"></mt-field>
+          <mt-field label="Date of birth" type="date" placeholder="Input your username" v-model="profile.birthDate"></mt-field>
+          <mt-field label="User ID" placeholder="Input your username" v-model="profile.userId"></mt-field>
+          <mt-field label="Address" type="textarea" rows="4" placeholder="Input your username" v-model="profile.address"></mt-field>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+	  import headTop from '../../components/head/head.vue'
+    import {CookieUtil} from '../../models/utils'
+    import {User} from '../../models/user'
+    import {loginUserInfo} from '../../vuex/models/user/XUser.js'
+    import {DomainManager} from '../../config/DomainManager.js'
+    import {Toast,Indicator} from 'mint-ui';
+
+    export default{
+    	components:{
+    		headTop
+    	},
+      data() {
+  	    return {
+          user:Object,
+          showPro:false,
+          // profile: {
+          //     userName:'',
+          //     firstName:'',
+          //     lastName:'',
+          //     cellphone:'',
+          //     email:'',
+          //     address:'',
+          //     userId:'',
+          //     sex:null,
+          // },
+          isActive: false,
+          userPW: {
+              password:'',
+              newPassword:''
+          },
+          newPasswordRP:'',
+          infoArr:Array,
+          // sexOptions:[
+          //   {
+          //     label:'Male',
+          //     vaule: 0
+          //   },
+          //   {
+          //     label: 'Female',
+          //     vaule: 1
+          //   }
+          // ]
+          
+        }
+      },
+      computed: {
+        username(){
+          if(this.user.firstName == null && this.user.lastName == null){
+            return this.user.email;
+          }else{
+            return this.user.firstName + " " + this.user.lastName
+          }
+        },
+        profile(){
+          return this.user;
+        }
+      },
+      watch:{
+        profile(val){
+          this.isActive = true;
+        }
+      },
+      created(){
+  	    this.getUser()
+      },
+      methods:{
+  	    getUser(){
+          let cu = new CookieUtil(document)
+          let self = this;
+          if(cu.hasItem("uuid")){
+            User.loadUser(self)
+                .then(user => {
+                    self.$nextTick(()=>{
+                        self.user = user;
+                        self.$store.commit(loginUserInfo,user)
+                    })
+                })
+                .catch(err => { console.log(err) })
+          }else {
+            console.log('error');
+          }
+        },
+        changeInfo(){
+          if(!this.isActive) return;
+          let self = this;
+          let infoString = '';
+          for(let v in this.profile){
+            if(this.profile[v] != ''){
+                infoString += v + '=' + this.profile[v] + '&';
+            }
+          }
+          User.changeUserInfo(this,infoString).then(function(res) {
+              if(res.success) {
+                Toast({
+                    message :'success',
+                    duration :1500
+                })
+              }else {
+                Toast({
+                    message :res.msg,
+                    duration :1500
+                })
+              }
+          });
+        },
+      },
+    }
+</script>
+
+<style lang="less" scoped>
+    /*::-webkit-input-placeholder{*/
+         /*font-size: 0.512rem;*/
+    /*}*/
+  @import "./content.less";
+</style>

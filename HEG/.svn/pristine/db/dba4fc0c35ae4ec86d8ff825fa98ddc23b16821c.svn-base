@@ -1,0 +1,149 @@
+<template>
+  <div class="security">
+    <head-top class="header">
+      <img slot="left" :src="require('../../assets/images/prevs.png')" class="prev" alt="">
+      <div slot="title" class="title">Account security</div>
+    </head-top>
+  
+    <div class="content">
+      <div class="pwdWrapper">
+        <div class="title flex align-items-center">
+          <span>Sign in Password</span>
+        </div>
+        <div class="changeForm">
+          <div class="formgroup" :class="{error:signinPwd.isError.cur}">
+            <input type="password"  v-model="signinPwd.password" placeholder="Signin Password">
+          </div>
+          <div class="formgroup" :class="{error:signinPwd.isError.new}">
+            <input type="password" v-model="signinPwd.newPassword" placeholder="New Password">
+          </div>
+          <div class="formgroup" :class="{error:signinPwd.isError.con}">
+            <input type="password"  v-model="signinPwd.confirmPwd" placeholder="Confirm Password">
+          </div>
+          <div class="btnBox flex ">
+            <a href="javascript:void(0)" @click="signSub" class="signpwd">
+              Submit
+            </a>
+          </div>
+        </div> 
+      </div>
+      <div class="pwdWrapper">
+        <div class="title flex align-items-center">
+          <span>Payment Password</span>
+        </div>
+        <div class="changeForm">
+          <div class="formgroup" :class="{error:payPwd.isError.cur}">
+            <input type="password"  v-model="payPwd.password" placeholder="Current Password">
+          </div>
+          <div class="formgroup" :class="{error:payPwd.isError.new}">
+            <input type="password" v-model="payPwd.newPassword" placeholder="New Password">
+          </div>
+          <div class="formgroup" :class="{error:payPwd.isError.con}">
+            <input type="password"  v-model="payPwd.confirmPwd" placeholder="Confirm Password">
+          </div>
+          <div class="btnBox flex ">
+            <a href="javascript:void(0)" @click="paySub" class="signpwd">
+              Submit
+            </a>
+          </div>
+        </div> 
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import headTop from '../../components/head/head.vue';
+  import {CookieUtil} from '../../models/utils';
+  import {User} from 'models/user';
+  import {Toast,Indicator} from 'mint-ui';
+  export default{
+    components:{
+      headTop,
+    },
+    data(){
+      return{
+        signinPwd:{
+          password:'',
+          newPassword:'',
+          confirmPwd:'',
+          isError:{
+            cur:false,
+            new:false,
+            con:false,
+          },
+        },
+        // error:false,
+        payPwd:{
+          password:'',
+          newPassword:'',
+          confirmPwd: '',
+          isError:{
+            cur:false,
+            new:false,
+            con:false,
+          },
+        }
+      }
+      
+    },
+    methods:{
+      paySub(){
+
+      },
+      signSub(){
+        if(this.verify(this.signinPwd)){
+          let passwordString = '';
+          for (let v in this.signinPwd) {
+              passwordString += v + '=' + this.signinPwd[v] + '&'
+          }
+          User.changeUserPassword(this,passwordString).then(function(res){
+              console.log(res);
+                if(res.success){
+                  Toast({
+                      message: 'Success!',
+                      duration: 1500
+                  })
+                }else {
+                  Toast({
+                      message: res.msg,
+                      duration: 1500
+                  })
+                }
+              }
+          ).catch(function(error) {
+              console.log(error);
+          })
+        }
+      },
+      verify(pwdUnit){
+        let flag = true;
+        if(pwdUnit.password == '' || pwdUnit.newPassword == '' || pwdUnit.confirmPwd == ''){
+          flag = false;
+          Toast({
+            message: 'The password can not be empty',
+            duration: 1500
+          })
+          return false;
+          // pwdUnit.isError.cur = true;
+        }
+        // if(pwdUnit.newPassword == ''){
+        //   pwdUnit.isError.new = true;
+        //   flag = false;
+        // }
+        if( pwdUnit.confirmPwd != pwdUnit.newPassword){
+          Toast({
+            message: 'The password must be the same',
+            duration: 1500
+          })
+          return false;
+          // flag = false;
+          // pwdUnit.isError.con = true;
+        }
+        return flag;
+      }
+    }
+  }
+  </script>
+<style lang="less" scoped>
+  @import './content.less';
+</style>

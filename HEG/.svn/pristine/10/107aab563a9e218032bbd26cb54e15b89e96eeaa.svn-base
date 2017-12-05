@@ -1,0 +1,438 @@
+<template>
+    <div id="my_profile">
+    	<head-top class="header">
+			<img slot="left" :src="require('../../assets/images/prevs.png')" class="prev" @click="$router.go(-1)">
+			<div slot="title" class="title">Profile</div>
+		</head-top>
+        <div class="mp_container">
+            <div class="mp_info ">
+                <div class="mp_avatar flex content-center">
+                    <div class="avatar">
+                        <img :src="require('../../assets/images/menu/usericon.png')" alt="">
+                    </div>
+                </div>
+                <div class="info_text">
+                    <span class="name">{{username}}</span>
+
+                </div>
+                <!--<span class="change_info">-->
+                    <!--<a href="javascript:">-->
+                        <!--<img src="../../assets/images/profile/mp_icon@2x.png" alt="change">-->
+                    <!--</a>-->
+                <!--</span>-->
+            </div>
+            <div class="pro_info">
+                <div class="title flex space-between">
+                    <span>Personal</span>
+                    <a class="edit" @click="showProEdit"><img src="../../assets/images/profile/mp_icon@2x.png" alt=""></a>
+                </div>
+                <div v-show="showPro" class="pro_list animated fadeIn">
+                    <div class="form-group">
+                        <label for="pro_fn">FirstName</label>
+                        <input type="text" v-model="proInfo.firstName" id="pro_fn">
+                    </div>
+                    <div class="form-group">
+                        <label for="pro_ln">LastName</label>
+                        <input type="text" v-model="proInfo.lasttName" id="pro_ln">
+                    </div>
+                    <div class="form-group">
+                        <label for="pro_pn">PhoneNumber</label>
+                        <input type="text" v-model="proInfo.cellnumber" id="pro_pn">
+                    </div>
+                    <div class="sub-wrapper">
+                        <button class="btn" @click="showProInfo">submit</button>
+                        <button class="cancel">cancel</button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="passengers_info">
+                <div class="title">
+                    <span>Passengers</span>
+                    <a class="change_info" href="javascript:">
+                        <img src="../../assets/images/profile/mp_icon@2x.png" alt="add">
+                    </a>
+                </div>
+                <div class="info_list flex space-between">
+                    <div class="text_01 flex space-between">
+                        <input class="fname " type="text" placeholder="First name">
+                        <input class="lname" type="text" placeholder="Last name">
+                        <select name="sex" id="sex">
+                            <option value="female">female</option>
+                            <option value="male">male</option>
+                        </select>
+                    </div>
+                    <div class="text_02 flex space-between">
+                        <input type="text" class="email" placeholder="Email-address">
+                        <input type="text" class="tel" placeholder="Telephone Number">
+                    </div>
+                    <div class="sub-wrapper clear">
+                        <button class="btn">submit</button>
+                    </div>
+                </div>
+                <div class="info_detail">
+                    <a href="javascript:" class="change_info">
+                        <img src="../../assets/images/profile/mp_icon01@2x.png" alt="change">
+                    </a>
+                    <div class="text_01">
+                        <span class="fname">Ada</span>
+                        <span class="lname">Chen</span>
+                        <span class="sex">famale</span>
+                    </div>
+                    <div class="text_02">
+                        <span class="email">1234567@qq.com</span>
+                    </div>
+                    <div class="text_03">
+                        <span class="tel">1234567</span>
+                    </div>
+                </div>
+            </div>
+            <div class="change_pw">
+                <div class="title">
+                    <span>Change Password</span>
+                    <a href="javascript:" class="change_info">
+                        <img src="../../assets/images/profile/mp_icon01@2x.png" alt="change">
+                    </a>
+                </div>
+                <div class="form_list">
+                    <div class="form-group">
+                        <input class="original_pw" type="text" placeholder="Original Password">
+                    </div>
+                    <div class="form-group">
+                        <input class="new_pw" type="text" placeholder="New Password">
+                    </div>
+                    <div class="form-group">
+                        <input class="confirm_pw" type="text" placeholder="Confirm Password">
+                    </div>
+                    <div class="form-group sp">
+                        <button class="btn">submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+	import headTop from '../../components/head/head.vue'
+    import {CookieUtil} from '../../models/utils'
+    import {User} from '../../models/user'
+    import {loginUserInfo} from '../../vuex/models/user/XUser.js'
+    import {changeUserInfo} from '../../models/user'
+
+    export default{
+    	components:{
+    		headTop
+    	},
+        data() {
+    	    return {
+                user:Object,
+                showPro:false,
+                proInfo: {
+                    firstName:'',
+                    lastName:'',
+                    cellphone:''
+                },
+                infoArr:Array
+            }
+        },
+        computed: {
+            username(){
+                if(this.user.firstname == null && this.user.lastname == null){
+                    return this.user.emailAddress;
+                }else{
+                    return this.user.firstname + " " + this.user.lastname
+                }
+            }
+        },
+        created(){
+    	    this.getUser()
+        },
+        methods:{
+    	    getUser(){
+                let cu = new CookieUtil(document)
+                let self = this;
+                if(cu.hasItem("uuid")){
+                    User.loadUser(self)
+                        .then(user => {
+                            self.$nextTick(()=>{
+                                self.user = user;
+                                self.$store.commit(loginUserInfo,user)
+                            })
+                        })
+                        .catch(err => { console.log(err) })
+                }else {
+                    console.log('error');
+                }
+            },
+            showProEdit(){
+                this.showPro = !this.showPro;
+            },
+            showProInfo(){
+                let self = this;
+                let infoString = '';
+                for(let v in this.proInfo){
+                    if(this.proInfo[v] != ''){
+                        infoString += v + '=' + this.proInfo[v] + '&';
+                    }
+                }
+//                User.changeUserInfo(self,infoString).then(res => {
+//                    console.log(res);
+//                })
+                let url = 'http://www.happyeasygo.com:8080/indi_demo/user/changeUserInfo.do?'+ infoString;
+                this.$http.post(url,{ withCredentials : true }).then(res => {
+                    console.log(res);
+                })
+            }
+        },
+        mounted(){
+        }
+    }
+</script>
+
+<style lang="less" scoped>
+	
+    #my_profile {
+    	.header{
+            background:#f7f7f9;
+            border-bottom:1px solid #ccc;
+            .title{
+                font-size:0.768rem;
+                color:#333;
+
+            }
+        }
+        .mp_container{
+            margin-top:2rem;
+            padding: 0 1.28rem;
+            height: 10rem;
+            background: url("../../assets/images/profile/user-bg2.png") 0 0 no-repeat;
+            background-size: cover;
+            .mp_info{
+                .mp_avatar{
+                    padding-top:0.6rem;
+                    padding-bottom:0.34rem;
+                    .avatar {
+                        width: 4rem;
+                        height: 4rem;
+                        border-radius: 50%;
+                        img{
+                            width:100%;
+                        }
+                    }
+                }
+                .info_text{
+                    padding:1.1rem 0;
+                    span{
+                        display: block;
+                        line-height: 1.5;
+                        color: #ffffff;
+                        font-size: 0.64rem;
+                    }
+                    .tel{
+                        font-size: 0.512rem;
+                    }
+                }
+                .change_info{
+                    a{
+                        display: inline-block;
+                        padding:0 0.2rem;
+                        img{
+                            display: inline-block;
+                            width: 0.7rem;
+                            height: 0.7rem;
+                        }
+                    }
+                }
+            }
+            .pro_info{
+                padding-top:1.5rem ;
+                .title{
+                    text-align: left;
+                    font-size: 0.68rem;
+                    .edit{
+                        display:block;
+                        img{
+                            display:block;
+                            width: 1rem;
+                            height: 1rem;
+                            background: #ffad3d;
+                        }
+                    }
+                }
+                .pro_list{
+                    padding: 0.5rem 0;
+                    overflow:hidden;
+                    .form-group{
+                        display: table;
+                        padding: 0.2rem 0;
+                        label,#pro_fn,#pro_ln,#pro_pn{
+                            display: table-cell;
+                        }
+                        label{
+                            font-size:0.68rem;
+                            vertical-align: middle;
+                            padding-right:0.5rem;
+                        }
+
+                    }
+                    input{
+                        /*float: left;*/
+                        text-indent: 0;
+                        padding:0.2rem;
+                        border:1px solid #cccccc;
+                        border-radius: 0;
+                    }
+                    .sub-wrapper{
+                        padding:0.2rem;
+                        .btn,.cancel{
+                            /*float: left;*/
+                            width: 2.37rem;
+                            height: 1.152rem;
+                            margin:0 0.2rem;
+                            border-radius:0.1rem;
+                            background: #ffad3d;
+                            color: #ffffff;
+                            font-size: 0.597rem;
+                        }
+                    }
+                }
+
+            }
+            .passengers_info{
+                padding-top: 0.43rem;
+                .title{
+                    text-align: left;
+                    font-size: 0.64rem;
+                    margin-bottom:0.68rem;
+                    .change_info{
+                        padding: 0 0.2rem;
+                        img{
+                            width: 0.68rem;
+                            height: 0.68rem;
+                            display: inline-block;
+                            vertical-align: bottom;
+                        }
+                    }
+                }
+                .info_list{
+                    flex-wrap:wrap;
+                    input{
+                        text-indent: 0;
+                        border:1px solid #cccccc;
+                        padding: 0.15rem 0.3rem;
+                        box-sizing: border-box;
+                        line-height:1.5;
+                        font-size:0.512rem;
+                    }
+                    .text_01,.text_02 {
+                        padding-bottom: 0.555rem;
+                        width: 100%;
+                    }
+                    .fname,.lname{
+                         width: 30%;
+                    }
+                    #sex{
+                        display: inline-block;
+                        padding:0 0.3rem;
+                        border: 1px solid #cccccc;
+                    }
+
+                    .email,.tel{
+                        width: 45%;
+                    }
+                    .sub-wrapper{
+                        width: 100%;
+                        .btn{
+                            float: right;
+                            width: 3.37rem;
+                            height: 1.152rem;
+                            border-radius:0.1rem;
+                            background: #ffad3d;
+                            color: #ffffff;
+                            font-size: 0.597rem;
+                        }
+                    }
+                }
+                .info_detail{
+                    box-sizing: border-box;
+                    margin-top:0.768rem;
+                    padding: 0.682rem 0.427rem;
+                    border: 1px solid #cccccc;
+                    border-radius: 0.1rem;
+                    text-align: left;
+                    color:#0B9D78;
+                    position:relative;
+                    .change_info{
+                        position:absolute;
+                        top:0.512rem;
+                        right:0.47rem;
+                        display: inline-block;
+                        padding:0.1rem;
+                        img{
+                            width: 0.68rem;
+                            height: 0.68rem;
+                        }
+                    }
+                    .text_01,.text_02{
+                       font-size: 0.64rem;
+                    }
+                    .text_03{
+                        font-size: 0.512rem;
+                    }
+                }
+            }
+            .change_pw{
+                padding-top: 1rem;
+                text-align: left;
+                .title{
+                    font-size: 0.64rem;
+                    padding-bottom:0.47rem;
+                    .change_info{
+                        display: inline-block;
+                        padding: 0 0.2rem;
+                        img{
+                            display: inline-block;
+                            vertical-align: bottom;
+                            width: 0.68rem;
+                            height: 0.68rem;
+                        }
+                    }
+                }
+                .form_list{
+                    .form-group{
+                        overflow: hidden;
+                        box-sizing: border-box;
+                        border: 1px solid #ccc;
+                        border-radius:0.1rem;
+                        margin-bottom:0.597rem;
+                        input{
+                            display: block;
+                            box-sizing: border-box;
+                            width: 100%;
+                            padding: 0.15rem 0.3rem;
+                            text-indent: 0;
+                            font-size:0.512rem;
+                        }
+                    }
+                    .form-group.sp{
+                        text-align: center;
+                        border:none;
+                        .btn{
+                            width: 3.37rem;
+                            height: 1.152rem;
+                            border-radius:0.1rem;
+                            background: #ffad3d;
+                            color: #ffffff;
+                            font-size: 0.597rem;
+                        }
+                     }
+                }
+            }
+        }
+    }
+    /*::-webkit-input-placeholder{*/
+         /*font-size: 0.512rem;*/
+    /*}*/
+
+</style>

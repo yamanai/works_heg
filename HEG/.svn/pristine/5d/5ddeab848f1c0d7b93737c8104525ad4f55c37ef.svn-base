@@ -1,0 +1,467 @@
+<template>
+	<div class="wrapper">
+		<head-top class="header">
+			<img slot="left" :src="require('../../assets/images/prevs.png')" class="prev" @click="$router.go(-1)">
+			<div slot="title" class="title">Recharge Program</div>
+		</head-top>
+		<div class="container">
+			<div class="top"></div>
+			<div class="section1">
+				<ul>
+					<li class="flex content-start">
+						<img :src="require('../../assets/images/recharge/icon-1.png')" alt="">
+						<p>Validity From <span class="yellow">Coming Soon</span></p>
+					</li>
+					<li class="flex content-start">
+						<img :src="require('../../assets/images/recharge/icon-1.png')" alt="">
+						<p>Applicable <span class="yellow">on Domestic Flights</span></p>
+					</li>
+					<li class="flex content-start">
+						<img :src="require('../../assets/images/recharge/icon-1.png')" alt="">
+						<p>Applicable for <span class="yellow">PC Site &amp; Moble Site</span></p>
+					</li>
+					<li class="flex content-start align-items-center">
+						<img :src="require('../../assets/images/recharge/icon-1.png')" alt="">
+						<p>Expires in <span class="yellow">∞</span></p>
+					</li>
+				</ul>
+			</div>
+			<div class="section2">
+				<!--  Gold 后感叹号-->
+				<h2 class="yellow">Happy GOLD Recharge Rewards</h2>
+				<p>
+					Once you top up no less than Rs.5000 to your account at HappyEasyGo in one time, you'll get <span class="sp-span">extra 1%</span> of the total amount of money you recharged as a reward.
+				</p>
+				<p>
+					It can be used as your own credits when you book any flight via happyeasygo.com.
+				</p>
+				<!--  Happy 前感叹号-->
+				<p class="sp">
+					<span class="font-bold">Happy GOLD</span> is one kind of e-cash under our Happy Wallet program and it has no usage limits &amp; unlimited validity. <span class="yellow" @click="$router.push('/wallet')">Know more</span>.
+				</p>
+				<div class="btn flex content-center">
+					<a class="rn-btn" href="javascript:" @click="$router.push('/happywallet')">Recharge Now</a>
+				</div>
+			</div>
+			<div class="section3">
+				<h2 class="yellow">About the top up</h2>
+				<div class="topUp">
+					<h4>How to top up</h4>
+					<div class="list flex flex-start align-items-center">
+						<div class="ico">
+							<img :src="require('../../assets/images/recharge/icon-6.png')" alt="">
+						</div>
+						<div class="text">
+							<p>
+								Login your account at happyeasygo.com
+							</p>
+						</div>
+					</div>
+					<div class="list flex flex-start align-items-center">
+						<div class="ico">
+							<img :src="require('../../assets/images/recharge/icon-7.png')" alt="">
+						</div>
+						<div class="text">
+							<p>
+								Choose Happy Wallet in your Account Center and select Happy GOLD.
+							</p>
+						</div>
+					</div>
+					<div class="list flex flex-start align-items-center">
+						<div class="ico">
+							<img :src="require('../../assets/images/recharge/icon-8.png')" alt="">
+						</div>
+						<div class="text">
+							<p>
+								Click on Recharge Button and pay money here.
+							</p>
+						</div>
+					</div>
+					<div class="list flex flex-start align-items-center">
+						<div class="ico">
+							<img :src="require('../../assets/images/recharge/icon-9.png')" alt="">
+						</div>
+						<div class="text">
+							<p>
+								Finish the payment process as it guides.
+							</p>
+						</div>
+					</div>
+					<div class="list flex flex-start align-items-center">
+						<div class="ico">
+							<img :src="require('../../assets/images/recharge/icon-10.png')" alt="">
+						</div>
+						<div class="text">
+							<p>
+								Check the balance of your account.
+							</p>
+						</div>
+					</div>
+					<div class="line"></div>
+				</div>
+			
+				<div class="rewards">
+					<h4>How to receive the rewards</h4>
+					<div class="list flex flex-start align-items-center">
+						<div class="ico">
+							<img :src="require('../../assets/images/recharge/icon-6.png')" alt="">
+						</div>
+						<div class="text">
+							<p>
+								The reward credits will be added into your Happy GOLD Account around 1 hour automatically after you successfully top up your account.
+							</p>
+						</div>
+					</div>
+					<div class="list flex flex-start align-items-center">
+						<div class="ico">
+							<img :src="require('../../assets/images/recharge/icon-7.png')" alt="">
+						</div>
+						<div class="text">
+							<p>
+								And you'll receive an email from our system when it's done.
+							</p>
+						</div>
+					</div>
+					<div class="line"></div>
+				</div>
+			</div>
+
+			<div class="section4">
+				<h2>Total Amount of Reward</h2>
+				<p>
+					There is no limits on the total amount of your reward as it only depends on the amount of money you recharged.
+				</p>
+				<p>
+					<strong>For example:</strong>  if A tops up Rs.5,000 through our Happy GOLD, A will receive the reward of Rs.50. So if A tops up Rs.500,000 and A will have extra Rs.5000 reward.
+				</p>
+				<p>
+					&bull; In other words, we will save you the total amount of the reward when you book any flights.
+				</p>
+			</div>
+			<div class="section5">
+				<h2 class="yellow">FAQS</h2>
+				<div class="list">
+					<h2>What is the Happy GOLD Recharge Reward?</h2>
+					<div class="text">
+						<p>
+							The Happy GOLD Recharge Reward is an award scheme run by HappyEasyGo in order to reward our users who recharge their account at HappyEasyGo.com. This scheme starts from xx, 2017 to the date at the sole discretion of HappyEasyGo.
+						</p>
+					</div>
+				</div>
+				<div class="list">
+					<h2>How can I get the recharge reward?</h2>
+					<div class="text">
+						<p>
+							Once you top up your account through Happy GOLD and you'll get 1% automatically of your recharge into your Happy GOLD Account.
+						</p>
+					</div>
+				</div>
+				<div class="list">
+					<h2>How can I use the recharge reward?</h2>
+					<div class="text">
+						<p>
+							You can use all the recharge rewards as your own credits to book any flights.
+						</p>
+					</div>
+				</div>
+				<div class="list">
+					<h2>Can the recharge reward be withdrawn?</h2>
+					<div class="text">
+						<p>
+							Yes, it can. But when you withdraw the credits , you'll be charged of 1% service fee.
+						</p>
+					</div>
+				</div>
+				<div class="list">
+					<h2>When will the recharge reward be due?</h2>
+					<div class="text">
+						<p>
+							It will never become due until you withdraw or use it up.
+						</p>
+					</div>
+				</div>
+				<div class="list">
+					<h2>Why doesn't the money I recharged show in my account ?</h2>
+					<div class="text">
+						<p>
+							Because our financial system needs half an hour or so to receive your cash. Once we're in sure of your payment, we will send you the confirmation letter immediately. Therefore, the total value of your account will show up in no more than 1 hour.
+						</p>
+					</div>
+				</div>
+				<div class="list">
+					<h2>Why am I unable to see the recharge reward immediately?</h2>
+					<div class="text">
+						<p>
+							Theoretically, the reward credits will be added into your Happy GOLD Account around half an hour automatically after you successfully top up your account. However, it may need more than 1 hour if your bank transfer is inefficient since we can reward you only when our system obtains your payment.
+						</p>
+					</div>
+				</div>
+			</div>
+			
+			<div class="terms">
+				<h2 class="yellow">Terms and Conditions</h2>
+			</div>
+			<div class="share" v-show='false'>
+				<h2 class="yellow">Share this Offer</h2>
+				<div class="ico flex space-between">
+					<img :src="require('../../assets/images/cashback/icon-12.png')" alt="">
+					<img :src="require('../../assets/images/cashback/icon-13.png')" alt="">
+					<img :src="require('../../assets/images/cashback/icon-14.png')" alt="">
+				</div>
+				<div class="input-group">
+					<div class="list flex space-between">
+						<input type="text" placeholder="Enter your email">
+						<a href="javascript:">Send</a>
+					</div>
+					<div class="list flex space-between">
+						<input type="text" placeholder="https://www.happyeasygo.com/">
+						<a href="javascript:">Copy</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+	import headTop from '../../components/head/head.vue'
+	export default{
+		components:{
+			headTop
+		}
+	}
+</script>
+<style lang='less' scoped>
+	.wrapper{
+		font-family:"PingFangSC";
+	}
+	.header{
+		background:#f7f7f9;
+		border-bottom:1px solid #ccc;
+		.title{
+			font-size:0.768rem;
+			color:#333;
+		}
+	}
+	.top{
+		margin-top:2rem;
+		height:9.8rem;
+		background:#fff url('../../assets/images/recharge/Cashback-banner.png') center no-repeat;
+		background-size:100% 9.8rem;
+	}
+	.section1{
+		padding:0.4rem 0.68rem 1rem;
+		background-color:#fff;
+		ul li{
+			padding:0.4rem 0;
+			border-bottom:1px solid #ccc;
+			img{
+				width:0.769rem;
+				height:0.769rem;
+			}
+			p{
+				font-size:0.68rem;
+				color:#999;
+				padding-left:0.4rem;
+			}
+		}
+	}
+	.section2{
+		padding:0.68rem;
+		margin-top:0.4rem;
+		background-color:#fff;
+		h2{
+			font-size:0.6rem;
+		}
+		p{
+			font-size:0.52rem;
+			color:#999;
+			text-align:left;
+			line-height:0.769rem;
+			margin:0.4rem 0;
+		}
+		.sp-span{
+
+			color: #ffad3d;
+		}
+		.sp{
+			color: #0b9d78;
+		}
+		.font-bold{
+			font-weight: 700;
+			color: #0b9d78;
+		}
+		.rn-btn{
+			font-weight: 700;
+		}
+	}
+	.section3{
+		position:relative;
+		background-color:#fff;
+		margin-top:0.4rem;
+		padding:0.68rem;
+		h2{
+			font-size:0.6rem;
+			padding:0.6rem 0;
+		}
+		h4{
+			font-size:0.6rem;
+			color:#666;
+			font-weight:normal;
+			text-align:left;
+			padding:0.2rem 0;
+		}
+		.line{
+			width:1px;
+			background-color:#ffa033;
+			position:absolute;
+			left:0.66rem;
+			top:2rem;
+			z-index:1;
+		}
+		.topUp{
+			position:relative;
+			.line{
+				height:9.2rem;
+			}
+		}
+		.rewards{
+			position:relative;
+			.line{
+				height:3rem;
+			}
+		}
+		.list{
+			padding:0.4rem 0;
+			.ico{
+				z-index:2;
+				img{
+					width:1.32rem;
+				}
+			}
+			.text{
+				p{
+					font-size:0.52rem;
+					color:#999;
+					text-align:left;
+					padding-left:0.4rem;
+					line-height:0.769rem;
+				}
+			}
+		}
+	}
+	.section4{
+		padding:0.6rem;
+		background-color:#fff;
+		h2{
+			font-size:0.68rem;
+			color:#666;
+			text-align:left;
+			padding:0.4rem 0;
+		}
+		p{
+			font-size:0.52rem;
+			color:#999;
+			line-height:0.769rem;
+			margin:0.4rem 0;
+			text-align:left;
+		}
+	}
+	.section5{
+		padding:0 0.68rem 0.68rem;
+		background-color:#fff;
+		margin-top:0.4rem;
+		h2{
+			font-size:0.6rem;
+			padding:0.68rem 0;
+		}
+		.list{
+			h2{
+				text-align:left;
+				padding:0.4rem 0 0.4rem 1rem;
+				color:#666;
+				background:url('../../assets/images/recharge/icon-11.png') left center no-repeat;
+				background-size:0.8rem;
+			}
+			.text{
+				padding:0.68rem;
+				background-color:#fbfbfb;
+				p{
+					font-size:0.52rem;
+					color:#999;
+					line-height:0.769rem;
+					text-align:left;
+				}
+			}
+		}
+	}
+	.btn{
+		background-color:#fff;
+		padding:1rem 0;
+		a{
+			height:1.2rem;
+			line-height:1.2rem;
+			border:1px solid #ffa234;
+			font-size:0.52rem;
+			color:#ffa234;
+			text-align:center;
+			border-radius:0.2rem;
+			padding:0 0.2rem;
+		}
+	}
+	.terms{
+		margin-top:0.4rem;
+		padding:0 0.68rem;
+		background-color:#fff;
+		h2{
+			font-size:0.6rem;
+			height:2rem;
+			line-height:2rem;
+			background:url('../../assets/images/recharge/Cashback-app_39.png') right center no-repeat;
+			background-size:0.68rem;
+		}
+	}
+	.share{
+		padding:0.68rem;
+		margin-top:0.4rem;
+		background-color:#fff;
+		h2{
+			font-size:0.6rem;
+			height:2rem;
+			line-height:2rem;
+		}
+		.ico{
+			padding:0 2rem;
+			img{
+				width:1.6rem;
+				height:1.6rem;
+			}
+		}
+		.input-group{
+			padding:0.6rem 0 1rem;
+			.list{
+				margin-top:0.4rem;
+				input{
+					width:80%;
+					text-indent:0.4rem;
+					height:1.2rem;
+					line-height:1.2rem;
+					font-size:0.6rem;
+					border:1px solid #eee;
+				}
+				a{
+					display:block;
+					width:20%;
+					height:1.2rem;
+					line-height:1.2rem;
+					text-align:center;
+					background-color:#ffa033;
+					color:#fff;
+					font-size:0.6rem;
+				}
+			}
+		}
+	}
+	::-webkit-input-placeholder{color:#ccc;font-size:0.6rem;padding-left:0.2rem}
+	::-moz-placeholder{color:#ccc;font-size:0.6rem;padding-left:0.2rem}
+	:-moz-placeholder{color:#ccc;font-size:0.6rem;padding-left:0.2rem}
+</style>

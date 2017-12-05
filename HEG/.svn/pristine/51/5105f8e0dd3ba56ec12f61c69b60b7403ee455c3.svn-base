@@ -1,0 +1,281 @@
+<template>
+  <div class="wrapper">
+    <head-top class="header">
+      <i slot="left" class="prev iconfont icon-back" @click="$router.go(-1)"></i>
+      <div slot="title" class="title">Withdraw</div>
+      <i slot="right" class="sp iconfont icon-back"></i>
+    </head-top>
+    <div class="container">
+      <div class="content">
+        <div class="form-group">
+          <label for="card">Beneficiary Credit Card No</label>
+          <div class="fw">
+            <input type="text" id="card" v-model="info.cardNo">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="account">Re-Enter Beneficiary Account No / Credit Card No:</label>
+          <div class="fw">
+            <input type="text" id="account" v-model="rcardNo">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="account">Beneficiary account type:</label>
+          <div class="fw">
+            <select name="type" id="" v-model="info.accountType">
+              <option value="Savings">Savings</option>
+              <option value="Current">Current</option>
+              <option value="Overdraft">Overdraft</option>
+              <option value="Cash Credit">Cash Credit</option>
+              <option value="Loan Account">Loan Account</option>
+              <option value="NRE">NRE</option>
+              <option value="Card Payment">Card Payment</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="">IFSC Code:</label>
+          <div class="fw">
+            <input type="text" id="" v-model="info.ifscCode">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="">Bank Name:</label>
+          <div class="fw">
+            <input type="text" id="" v-model="info.bankName">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="">Branch Name:</label>
+          <div class="fw">
+            <input type="text" id="" v-model="info.openBank">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="">Bank Branch Address:</label>
+          <div class="fw">
+            <input type="text" id="" v-model="info.openBankAddress">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="">Beneficiary Name</label>
+          <div class="fw">
+            <input type="text" id="" v-model="info.cardName">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="">Email ID</label>
+          <div class="fw">
+            <input type="email" id="" v-model="info.email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="">Withdrawal Amount</label>
+          <div class="spfg flex space-between align-items-center">
+            <input type="number" id="" v-model.number="info.cashAmount">
+            <span>
+              Balance:₹{{goldTotal}}
+            </span>
+          </div>
+        </div>
+
+        <p class="info">Note: You'll be charged 3% of withdraw amount for Transaction fee. Minimum amount Rs. 100</p>
+        <button class="btn" @click="submit()">Submit</button>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import headTop from '../../../components/head/head.vue'
+import { User } from '../../../models/user'
+import { Toast, Indicator } from 'mint-ui'
+
+export default {
+  components: {
+    headTop
+  },
+  data() {
+    return {
+      info: {
+        cardNo: '',
+        accountType: 'Savings',
+        ifscCode: '',
+        bankName: '',
+        openBank: '',
+        openBankAddress: '',
+        cardName: '',
+        email: '',
+        cashAmount: ''
+      },
+      rcardNo: '',
+      goldTotal: 0
+    }
+  },
+  methods: {
+    verify(item) {
+      if (item.length == 0) {
+        Toast('Please fill in the form completely.')
+        return false;
+      }
+    },
+    submit() {
+      for (var i in this.info) {
+        this.verify(this.info[i])
+      }
+      if (this.info.cardNo != this.rcardNo) {
+        Toast('Please check your card number')
+      } else if (this.info.cashAmount < 100 || this.info.cashAmount > this.goldTotal) {
+        Toast('Please enter the corret balance')
+      } else {
+        Indicator.open({ spinnerType: 'fading-circle' });
+
+        var parm = '';
+        for (var x in this.info) {
+          parm += x + '=' + this.info[x] + '&'
+        }
+        User.applyWalletCash(this, parm).then(res => {
+          if (res.success) {
+            Toast('success');
+            Indicator.close();
+            this.$router.push('/happywallet');
+          } else {
+            Toast('error')
+            Indicator.close();
+          }
+        })
+      }
+    }
+  },
+  created() {
+    var self = this;
+    User.getGold(self).then(res => {
+      self.goldTotal = Number(res.happyGoldBalance);
+    })
+  }
+}
+</script>
+<style lang='less' scoped>
+.header {
+  background: #0b9d78;
+  .sp {
+    opacity: 0;
+  }
+  .title {
+    line-height: 2.04rem;
+    font-size: 0.768rem;
+    color: #fff;
+  }
+}
+
+.container {
+  background-color: #fff;
+  padding: 0.427rem;
+  padding-top: 2.467rem;
+  .content {
+    background-color: #ffffff;
+    padding: 0 0.64rem 0.64rem 0.64rem;
+    .form-group {
+      text-align: left;
+      padding-bottom: 0.64rem;
+      width: 90%;
+      margin: 0 auto;
+      label {
+        display: inline-block;
+        font-size: 0.64rem;
+        padding-bottom: 0.43rem;
+      }
+      input {
+        width: 100%;
+        padding: 0.3rem;
+        outline: none;
+        text-indent: 0;
+        border-radius: 0;
+        display: inline-block;
+        box-sizing: border-box;
+      }
+      .fw {
+        display: table;
+        width: 100%;
+        border: 1px #ccc solid;
+        border-radius: 3px;
+        overflow: hidden;
+        input,
+        span {
+          font-size: 0.64rem;
+          display: table-cell;
+          vertical-align: middle;
+        }
+        select {
+          font-size: 0.64rem;
+          width: 100%;
+          padding: 0.3rem;
+        }
+        #card:after {
+          width: 100%;
+          height: 100%;
+          color: red;
+        }
+        span {
+          display: block;
+          width: 3rem;
+          text-align: center;
+          a {
+            display: inline-block;
+            width: 3.45rem;
+            height: 100%;
+            color: #ffffff;
+          }
+        }
+      }
+      .spfg {
+        width: 100%;
+        border-radius: 3px;
+        input {
+          font-size: 0.64rem;
+          width: 50%;
+          border: 1px #ccc solid;
+        }
+        span {
+          display: block;
+          font-size: 0.64rem;
+        }
+      }
+      #card {
+        display: block;
+        width: 100%;
+        font-size: 0.64rem;
+        outline: none;
+        padding: 0.3rem;
+      }
+    }
+    .sp {
+      padding-bottom: 3.24rem;
+    }
+    .info {
+      font-size: 0.64rem;
+      color: #cccccc;
+      padding-bottom: 0.6rem;
+      text-align: left;
+    }
+    .btn {
+      width: 100%;
+      height: 1.7rem;
+      line-height: 1.7rem;
+      display: block;
+      font-size: 0.64rem;
+      border-radius: 5px;
+      color: #ffffff;
+      background-color: #ffad3d;
+    }
+  }
+}
+</style>

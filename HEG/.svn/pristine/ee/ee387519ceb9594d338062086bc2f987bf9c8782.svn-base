@@ -1,0 +1,53 @@
+import Vue from 'vue'
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+import Vuex from 'vuex'
+import App from './App.vue'
+import router from './router'
+import resource from 'vue-resource'
+import $ from 'jquery'
+import Mint from 'mint-ui'
+import './filter/filter.js'
+import {FontUtil} from './models/utils'
+import './assets/font/WebRupee.V2.0.ttf'
+import './assets/font/Haettenschweiler.ttf'
+import {DatetimePicker,Picker,Button,Range,Popup,Radio} from 'mint-ui'
+import { store } from './vuex'
+import fastclick from 'fastclick'
+
+fastclick.attach(document.body);
+
+Vue.component(DatetimePicker.name,DatetimePicker);
+Vue.component(DatetimePicker.name,Picker);
+Vue.component(Button.name, Button);
+Vue.component(Range.name, Range);
+Vue.component(Popup.name, Popup);
+Vue.component(Radio.name, Radio);
+Vue.use(VueAwesomeSwiper)
+Vue.use(resource);
+Vue.use(Mint);
+
+FontUtil.init();
+
+var vm = new Vue({
+  el: '#app',
+  store,
+  router,
+  store,
+  methods:{
+  	onLoadFinish(){
+  		window.android && window.android.onViewShow();
+  	}
+  },
+  mounted(){
+  	this.onLoadFinish();
+  },
+  render: h => h(App)
+})
+
+Vue.directive('focus', {
+    // 当绑定元素插入到 DOM 中。
+    inserted: function (el) {
+        // 聚焦元素
+        el.focus()
+    }
+})

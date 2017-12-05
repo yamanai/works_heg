@@ -1,0 +1,239 @@
+<template>
+	<div class="wrapper">
+		<head-top class="header">
+			<i slot="left" class="iconfont icon-back" @click="$router.go(-1)" alt=""></i>
+			<span slot="title" class="title">{{heads.title}}</span>
+			<i slot="right" class="sp iconfont icon-back"></i>
+		</head-top>
+		<div class="container">
+			<div>
+				<div class="section flex" v-if="orderList.length != 0" v-for="(item,idx) in orderList" :key="item.id" @click="selectOrder(item,idx)">
+					<div class="dateTime flex">
+						<h2>{{new Date(item.bookOn).getDate()}}</h2>
+						<h3>{{TimeFormatUtil.getMonthDescription(new Date(item.bookOn).getMonth()).replace(/\./g,'')}}</h3>
+					</div>
+					<div class="bookInfo">
+						<div class="tripID">
+							<span>Trip Id:{{item.tripId}}</span>
+						</div>
+						<div class="city flex">
+							<span class="fromCity">{{item.from}}</span>
+							<span class="arive"></span>
+							<span class="toCity">{{item.to}}</span>
+						</div>
+						<div class="orderDate">
+							<span>Order date:{{TimeFormatUtil.getMonthDescription(new Date(item.departDateTime).getMonth()).replace(/\./g,'')}} {{new Date(item.departDateTime).getDate()}}</span>
+						</div>
+					</div>
+					<div class="orderType" :class="statuClass(item)">
+						<span>{{item['booking_status']}}</span>
+					</div>
+				</div>
+				<div class="noOrder" v-else>
+					<p>No record was found</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+import { User } from '../../models/user'
+import { TimeFormatUtil, OrderStatusUtil } from '../../models/utils'
+import headTop from '../../components/head/head.vue'
+import { FlightOrder } from '../../models/flightorder'
+import { Toast, Indicator } from 'mint-ui';
+
+export default {
+	components: {
+		headTop
+	},
+	data() {
+		return {
+			TimeFormatUtil,
+			heads: {
+				img: require('../../assets/images/flight-prev.png'),
+				title: 'Bookings'
+			},
+			orderList: [],
+			orders: null,
+			orderFee: null,
+			cssStatuActive: 'section1-head',
+			cssStatuDeactive: 'section2-head'
+		}
+		//521982416475258912
+	},
+	methods: {
+		statuClass(item) {
+			return OrderStatusUtil.getOrderClass(item['booking_status']);
+		},
+		selectOrder(item, index) {
+			let orderId = this.orderList[index].orderId;
+			Indicator.open({
+				spinnerType: 'fading-circle'
+			});
+			FlightOrder.searchOrder(this, orderId)
+				.then(json => {
+					this.orders = json.data.triplist;
+					this.orderFee = json.data.order;
+					if (this.orders.length == 0) {
+						Toast({
+							message: 'Please input correct trip ID or order ID',
+							duration: 1000
+						});
+					}
+					sessionStorage.removeItem('orders');
+					sessionStorage.removeItem('orderFee');
+					sessionStorage.removeItem('orderId');
+
+					sessionStorage.setItem('orders', JSON.stringify(this.orders));
+					sessionStorage.setItem('orderFee', JSON.stringify(this.orderFee));
+					sessionStorage.setItem('orderId', orderId);
+
+					let status;
+					for (let obj in this.orders.ticketsinfo) {
+						status = this.orders[0].ticketsinfo[obj][0].status;
+					}
+					if (status == 107 || this.orders[0].payStatus == 0 || this.orders[0].payStatus == 9 || this.orders[0].payStatus == 3 || this.orders[0].payStatus == 4) {
+						this.$router.push('/order/nopay');
+					} else if (status == 106) {
+						this.$router.push('/order/complete');
+					} else {
+						this.$router.push('/order/upcoming');
+					}
+
+					Indicator.close();
+				})
+				.catch(err => {
+					Toast({
+						message: 'Please input correct trip ID or order ID',
+						duration: 1000
+					});
+					console.log(err)
+					Indicator.close()
+				})
+
+
+
+		}
+	},
+	created() {
+		let self = this;
+		Indicator.open({
+			spinnerType: 'fading-circle'
+		});
+		User.getUserOrders(self)
+			.then(orders => {
+				self.orderList = orders;
+				Indicator.close();
+			})
+			.catch(err => console.log(err)
+			)
+	},
+	mounted() {
+
+	}
+}
+</script>
+<style lang="less" scoped>
+.header {
+	background: #0b9d78;
+	.title {
+		color: #fff;
+		font-size: 0.768rem;
+	}
+	.sp {
+		opacity: 0;
+	}
+}
+
+.container>div {
+	padding: 2.4rem 0.68rem 0;
+}
+
+.upcoming {
+	background-color: #d4efe8;
+}
+
+.paid {
+	background-color: #ffeac4;
+}
+
+.complete {
+	background-color: #efefef;
+}
+
+.section {
+	justify-content: flex-start;
+	background-color: #fff;
+	border-radius: 0.6rem;
+	box-shadow: 0 0.4rem 0.68rem #ddd;
+	position: relative;
+	overflow: hidden;
+	margin-bottom: 0.4rem;
+	.dateTime {
+		width: 2.6rem;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		border-right: 1px solid #ddd;
+		h2 {
+			font-size: 1.02rem;
+		}
+		h3 {
+			font-size: 0.6rem;
+			color: #ccc;
+		}
+	}
+	.bookInfo {
+		.tripID {
+			font-size: 0.56rem;
+			color: #ccc;
+			text-align: left;
+			padding: 0.2rem;
+			border-bottom: 1px dashed #ddd;
+		}
+		.city {
+			justify-content: space-between;
+			align-items: center;
+			padding: 0.2rem;
+			span {
+				font-size: 0.6rem;
+				color: #333;
+			}
+			.arive {
+				height: 0.4rem;
+				width: 1.2rem;
+				padding: 0 0.4rem;
+				background: url('../../assets/images/re-flight_07.png') center no-repeat;
+				background-size: 1.2rem;
+			}
+		}
+		.orderDate {
+			font-size: 0.6rem;
+			color: #ccc;
+			text-align: left;
+			padding: 0 0.2rem 0.6rem;
+		}
+	}
+	.orderType {
+		position: absolute;
+		right: -1px;
+		bottom: -1px;
+		font-size: 0.5rem;
+		padding: 0.2rem 0.4rem;
+		background-color: #efefef;
+		color: #ccc;
+	}
+}
+
+.noOrder {
+	height: 7.2rem;
+	background: url('../../assets/images/pnr_03.jpg') center no-repeat;
+	background-size: 7.2rem;
+	p {
+		font-size: 0.6rem;
+		color: #666;
+		padding-top: 7.2rem;
+	}
+}
+</style>

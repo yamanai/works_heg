@@ -1,0 +1,102 @@
+<template>
+	<div class="wrapper">
+		<head-top class="header">
+			<i slot="left" class="prev iconfont icon-back" @click="$router.go(-1)"></i>
+			<div slot="title" class="title">Contact</div>
+			<i slot="right" class="sp iconfont icon-back"></i>
+		</head-top>
+		<div class="content">
+			<div class="info-group">
+				<h2 class="title">Customer service number</h2>
+				<a :href="phoneLink">
+					{{websiteInfo.websitePhone}}
+				</a>
+				<p>Call us Now to 24×7 Customer Suppor</p>
+			</div>
+			<div class="info-group">
+				<h2 class="title">Email</h2>
+				<h3>For App bug reports and suggestions</h3>
+				<a href="mailto:feedback@happyeasygo.com">feedback@happyeasygo.com</a>
+				<h3>For customer services</h3>
+				<a :href="mailLink">
+					{{websiteInfo.websiteAddress}}
+				</a>
+			</div>
+			<div class="info-group">
+				<h2 class="title">Location</h2>
+				<a href="http://www.HappyEasyGo.com">www.HappyEasyGo.com</a>
+				<p>Level 3 Rider House, Plot No.-136 Sec-44</p>
+				<p>Near Hua City Centre Metro Station</p>
+				<p>Gurugram-122003 Haryana, India</p>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+import headTop from '../../components/head/head.vue'
+import { User } from 'models/user'
+export default {
+	components: {
+		headTop
+	},
+	data() {
+		return {
+			websiteInfo: '',
+			phoneLink: '',
+			mailLink: ''
+		}
+	},
+	created() {
+		User.getWebsiteInfo(this).then(res => {
+			this.websiteInfo = res.webSiteInfo;
+			this.phoneLink = "tel:" + this.websiteInfo.websitePhone;
+			this.mailLink = "mailto:" + this.websiteInfo.websiteAddress;
+		})
+	}
+}
+</script>
+<style lang="less" scoped>
+.wrapper {
+	.header {
+		background: #0b9d78;
+		.title {
+			line-height: 2.04rem;
+			font-size: 0.768rem;
+			color: #000;
+		}
+		.title {
+			color: #fff;
+		}
+		.sp {
+			opacity: 0;
+		}
+	}
+	.content {
+		padding: 0 0.64rem;
+		text-align: left;
+		margin-top: 2.68rem;
+		.info-group {
+			margin-bottom: 0.64rem;
+			line-height: 1.2;
+			.title {
+				font-weight: bold;
+				font-size: 0.768rem;
+				margin-bottom: 0.64rem;
+				border-bottom: 1px solid #ddd;
+			}
+			a,
+			p,
+			h3 {
+				font-weight: normal;
+				font-size: 0.612rem;
+				display: block;
+				color: #000;
+			}
+			a {
+				color: #0b9d78;
+				padding: 0.15rem 0;
+			}
+		}
+	}
+}
+</style>

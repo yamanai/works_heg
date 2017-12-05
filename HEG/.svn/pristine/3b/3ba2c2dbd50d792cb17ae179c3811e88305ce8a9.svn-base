@@ -1,0 +1,212 @@
+<template>
+	<div class="offers" @touchstart="touchstart" @touchmove="touchend">
+		<div class="header flex space-between">
+			<span @click="showHomes">Go Happy &amp; Go Easy</span>
+			<span>Coming Soon</span>
+			<!--@click="$router.push('/offer')"  More Offers-->
+		</div>
+		<Carousel></Carousel>
+		<div class="text">
+			<p>No Matter Where You are, Just Join Us</p>
+		</div>
+		<!--<div class="airlines">-->
+			<!--<div class="title flex space-between" @click="showAirline=!showAirline">-->
+				<!--<span class="text1">Referral Airlines</span>-->
+				<!--<span class="text2"></span>-->
+			<!--</div>-->
+			<!--<transition name="airline">-->
+				<!--<ul v-show="showAirline">-->
+					<!--<li class="flex space-between">-->
+						<!--<span>GoAir</span>-->
+						<!--<span>SpiceJet</span>-->
+						<!--<span>Vistara</span>-->
+					<!--</li>-->
+					<!--<li class="flex space-between">-->
+						<!--<span>Air India</span>-->
+						<!--<span>Jet Airways</span>-->
+						<!--<span>IndiGo</span>-->
+					<!--</li>-->
+					<!--<li>-->
+						<!--<span>AirAsia</span>-->
+					<!--</li>-->
+				<!--</ul>-->
+			<!--</transition>-->
+		<!--</div>-->
+		<div class="footer">
+			<div class="contact flex space-between align-items-center">
+				<!--<div class="loginMethods flex content-start align-items-center">-->
+					<!--<img :src="require('../../../assets/images/home/facebook-icons.png')" alt="">-->
+					<!--<img :src="require('../../../assets/images/home/twitter.png')" alt="">-->
+					<!--<img :src="require('../../../assets/images/home/google.png')" alt="">-->
+				<!--</div>-->
+				<a class="phoneNumber" href="tel:18003135699">
+					<span>Customer Support 7*24</span>
+					<span>1800-313-5699</span>
+				</a>
+			</div>
+			<div class="foot-bottom">
+				<p>
+					<span @click="$router.push('/agreement')">T&amp;C</span>
+					<span @click="$router.push('/privacy')">Privacy</span>
+					<span @click="$router.push('/about')">About Us</span>
+				</p>
+				<p>2017© HappyEasyGo.com. All Rights Reserved</p>
+			</div>
+		</div>	
+	</div>
+</template>
+<script>
+	import Carousel from './base/carousel.vue'
+	export default{
+		components:{
+			Carousel
+		},
+		data(){
+			return {
+				showHome:true,
+				showAirline:true,
+				startY:0,
+				endY:0
+			}
+		},
+		methods:{
+			showHomes(){
+				this.$emit('showHomes',this.showHome)
+			},
+			touchstart(e){
+				let touch = e.targetTouches[0];
+				this.startY = touch.pageY;
+			},
+			touchend(e){
+				let touch = e.targetTouches[0];
+				this.endY = touch.pageY;
+				let abs = Math.abs(this.endY - this.startY);
+				if(this.endY > this.startY && abs>100){
+					this.$emit('showHomes');
+				}
+			},
+		}
+	}
+</script>
+<style lang='less' scoped>
+	.airline-enter,.airline-leave-to{
+		opacity:0;
+	}
+	.airline-enter-active,.airline-leave-active{
+		transition:all .3s;
+	}
+
+	.offers{
+		height: 100%;
+		background-color:#f4f4f4;
+		position: relative;
+	}
+	.header{
+		background-color:#fff;
+		padding:0.68rem;
+		span:nth-of-type(1){
+			font-size:0.68rem;
+			color:#333;
+		}
+		span:nth-of-type(2){
+			font-size:0.6rem;
+			color:#ffad3d;
+		}
+	}
+	.text{
+		padding:0.68rem;
+		font-size:0.68rem;
+		color:#333;
+		text-align:right;
+		background-color:#fff;
+	}
+	.airlines{
+		padding:0.68rem;
+		background-color:#fff;
+		border-top:1px solid #eee;
+		.text1{
+			font-size:0.68rem;
+			color:#333;
+			padding-left:1rem;
+			background:url('../../../assets/images/home/airline.png') left center no-repeat;
+			background-size:0.68rem;
+		}
+		.text2{
+			padding-right:1rem;
+			background:url('../../../assets/images/home/down.png') right center no-repeat;
+			background-size:0.68rem;
+		}
+		ul{
+			padding-top:0.4rem;
+			li{
+				font-size:0.6rem;
+				color:#999;
+				line-height:1rem;
+				text-align:left;
+				span{
+					width:30%;
+					display:block;
+					border:1px solid #ccc;
+					text-align:center;
+					margin:0.2rem 0;
+				}
+			}
+		}
+	}
+	
+	.contact{
+		padding:0.68rem;
+		box-sizing:border-box;
+		.loginMethods{
+			img{
+				margin-right:0.6rem;
+			}
+			img:nth-child(1){
+				width:0.46rem;
+			}
+			img:nth-child(2){
+				width:0.98rem;
+			}
+			img:nth-child(3){
+				width:0.85rem;
+			}
+		}
+		.phoneNumber{
+			padding-left:1.2rem;
+			background:url('../../../assets/images/home/contact.png') left center no-repeat;
+			background-size:1.15rem;
+			text-align:left;
+			span:nth-of-type(1){
+				font-size:0.56rem;
+				color:#999;
+				display:block;
+				padding-bottom:0.1rem;
+			}
+			span:nth-of-type(2){
+				font-size:0.68rem;
+				color:#666;
+				display:block;
+				padding-top:0.1rem;
+			}
+		}
+	}
+	/*.footer{*/
+		/*width: 100%;*/
+		/*position: absolute;*/
+		/*bottom: 0;*/
+	/*}*/
+	.foot-bottom{
+		background-color:#0b9d78;
+		padding:0.4rem 0.68rem;
+		p{
+			font-size:0.6rem;
+			color:#fff;
+			margin:0.2rem 0;
+			span{
+				border-right:1px solid #fff;
+				display:inline-block;
+				padding:0 0.2rem;
+			}
+		}
+	}
+</style>

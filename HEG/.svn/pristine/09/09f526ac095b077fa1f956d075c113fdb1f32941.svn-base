@@ -1,0 +1,273 @@
+<template>
+  <div class="wrapper">
+    <head-top class="header">
+      <i slot="left" @click="$router.push('/')" class="prev iconfont icon-back"></i>
+      <div slot="title" class="title">Account security</div>
+      <i slot="right" class="sp iconfont icon-back"></i>
+    </head-top>
+
+    <div class="content">
+      <div class="pwdWrapper">
+        <div class="title flex align-items-center">
+          <span>Sign in Password</span>
+        </div>
+        <div class="changeForm">
+          <div class="formgroup" :class="{error:signinPwd.isError.cur}">
+            <input type="password" v-model="signinPwd.password" placeholder="Signin Password">
+          </div>
+          <div class="formgroup" :class="{error:signinPwd.isError.new}">
+            <input type="password" v-model="signinPwd.newPassword" placeholder="New Password">
+          </div>
+          <div class="formgroup" :class="{error:signinPwd.isError.con}">
+            <input type="password" v-model="signinPwd.confirmPwd" placeholder="Confirm Password">
+          </div>
+          <div class="btnBox flex ">
+            <a href="javascript:void(0)" @click="signSub" class="signpwd">
+              Submit
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="pwdWrapper">
+        <div class="title flex align-items-center">
+          <span>Payment Password</span>
+        </div>
+        <div class="changeForm">
+          <div class="formgroup" :class="{error:payPwd.isError.cur}">
+            <input type="password" v-model="payPwd.password" placeholder="Current Password">
+          </div>
+          <div class="formgroup" :class="{error:payPwd.isError.new}">
+            <input type="password" v-model="payPwd.newPassword" placeholder="New Password">
+          </div>
+          <div class="formgroup" :class="{error:payPwd.isError.con}">
+            <input type="password" v-model="payPwd.confirmPwd" placeholder="Confirm Password">
+          </div>
+          <div class="btnBox flex ">
+            <a href="javascript:void(0)" @click="paySub" class="signpwd">
+              Submit
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="pwdWrapper">
+        <div class="title flex align-items-center">
+          <span>Reset Payment Password</span>
+        </div>
+        <div class="changeForm">
+          <div class="formgroup" :class="{error:payPwd.isError.cur}">
+            <input type="email" v-model="resetPayPw.email" placeholder="Your E-mail Address">
+          </div>
+          <div class="btnBox flex ">
+            <a href="javascript:void(0)" @click="resetPay" class="signpwd">
+              Submit
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import headTop from '../../components/head/head.vue';
+import { CookieUtil } from '../../models/utils';
+import { User } from 'models/user';
+import { Toast, Indicator } from 'mint-ui';
+export default {
+  components: {
+    headTop,
+  },
+  data() {
+    return {
+      signinPwd: {
+        password: '',
+        newPassword: '',
+        confirmPwd: '',
+        isError: {
+          cur: false,
+          new: false,
+          con: false,
+        }
+      },
+      payPwd: {
+        password: '',
+        newPassword: '',
+        confirmPwd: '',
+        isError: {
+          cur: false,
+          new: false,
+          con: false,
+        }
+      },
+      resetPayPw: {
+        email: ''
+      }
+    }
+
+  },
+  methods: {
+    resetPay() {
+      if (this.resetPayPw.email == '') {
+        Toast('error')
+      }
+      let str = 'email=' + this.resetPayPw.email;
+      User.resetPayPassword(this, str).then(res => {
+        if (res.success) {
+          Toast('success')
+        } else {
+          Toast('error')
+        }
+      })
+    },
+    paySub() {
+      if (this.verify(this.payPwd)) {
+        let passwordString = '';
+        for (let v in this.payPwd) {
+          passwordString += v + '=' + this.payPwd[v] + '&'
+        }
+        User.changePayPassword(this, passwordString).then(function(res) {
+          if (res.success) {
+            Toast({
+              message: 'Success!',
+              duration: 1500
+            })
+          } else {
+            Toast({
+              message: res.msg,
+              duration: 1500
+            })
+          }
+        }
+        ).catch(function(error) {
+          console.log(error);
+        })
+      }
+    },
+    signSub() {
+      if (this.verify(this.signinPwd)) {
+        let passwordString = '';
+        for (let v in this.signinPwd) {
+          passwordString += v + '=' + this.signinPwd[v] + '&'
+        }
+        User.changeUserPassword(this, passwordString).then(function(res) {
+          if (res.success) {
+            Toast({
+              message: 'Success!',
+              duration: 1500
+            })
+          } else {
+            Toast({
+              message: res.msg,
+              duration: 1500
+            })
+          }
+        }
+        ).catch(function(error) {
+          console.log(error);
+        })
+      }
+    },
+    verify(pwdUnit) {
+      let flag = true;
+      if (pwdUnit.password == '' || pwdUnit.newPassword == '' || pwdUnit.confirmPwd == '') {
+        flag = false;
+        Toast({
+          message: 'The password can not be empty',
+          duration: 1500
+        })
+        return false;
+        // pwdUnit.isError.cur = true;
+      }
+      // if(pwdUnit.newPassword == ''){
+      //   pwdUnit.isError.new = true;
+      //   flag = false;
+      // }
+      if (pwdUnit.confirmPwd != pwdUnit.newPassword) {
+        Toast({
+          message: 'The password must be the same',
+          duration: 1500
+        })
+        return false;
+      }
+      if (pwdUnit.newPassword == pwdUnit.Password) {
+        Toast({
+          message: 'error',
+          duration: 1500
+        })
+        return false;
+      }
+      return flag;
+    }
+  }
+}
+</script>
+<style lang="less" scoped>
+@import '~assets/less/theme.less';
+.header {
+  background: #0b9d78;
+  .title {
+    font-size: 0.768rem;
+    color: #fff;
+  }
+  .sp {
+    opacity: 0;
+  }
+}
+
+div {
+  box-sizing: border-box;
+}
+
+.content {
+  padding-top: 2rem;
+  background-color: #fff;
+  overflow: auto;
+}
+
+.pwdWrapper {
+  font-size: 0.64rem;
+  padding-bottom: 0.64rem;
+  .title {
+    width: 100%;
+    height: 1.7rem;
+
+    padding: 0 0.64rem;
+    margin-bottom: 0.64rem;
+    font-weight: bold;
+    border-top: thin solid @gray-light;
+    border-bottom: thin solid @gray-light;
+  }
+  .changeForm {
+    padding: 0 1.36rem;
+
+    .formgroup {
+      border: thin solid @gray-light;
+      margin-bottom: .64rem;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      &.error {
+        border-color: @danger-color;
+      }
+    }
+    input {
+      display: block;
+      text-align: center;
+      width: 100%;
+      padding: 0.3rem 0.64rem;
+      box-sizing: border-box;
+    }
+    .btnBox {
+      justify-content: flex-end;
+    }
+    a.signpwd {
+      display: block;
+      width: 3.4rem;
+      height: 1.24rem;
+      background-color: @warning-color;
+      color: #fff;
+      border-radius: 4px;
+      line-height: 1.24rem;
+    }
+  }
+}
+</style>

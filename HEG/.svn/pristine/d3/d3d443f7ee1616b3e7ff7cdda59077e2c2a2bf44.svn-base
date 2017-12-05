@@ -1,0 +1,193 @@
+<template>
+	<div class="wrapper">
+		<div class="container">
+			<head-top class="header">
+				<i slot="left" class="prev iconfont icon-back" @click="$router.go(-1)"></i>
+				<div slot="title" class="title">Happy Wallet</div>
+				<i slot='right' class="sp iconfont icon-back"></i>
+			</head-top>
+			<div class="section1">
+				<div class="price1">
+					<h2>
+						<span class="rs">Rs.</span>{{totalPrice}}</h2>
+					<p>Total Amount</p>
+				</div>
+				<div class="price2 flex space-between">
+					<div class="silver br">
+						<h2>
+							<span class="rs">Rs.</span>{{happySilver | formatDate}}</h2>
+						<p>Happy Silver</p>
+					</div>
+					<div class="gold">
+						<h2>
+							<span class="rs">Rs.</span>{{happyGold | formatDate}}</h2>
+						<p>Happy Gold</p>
+					</div>
+				</div>
+			</div>
+			<div class="section2">
+				<div class="content">
+					<div class="text">
+						<p>
+							Happy Wallet is your personal travel currency , You can save on your travel bookings when you book using happy wallet Unless specified, the term ‘Happy Wallet' means Happy Gold &amp; Happy Silver INR 1 of Happy Gold/Happy Silver = INR 1 Know more
+						</p>
+						<a class="yellow" href="javascript:;">Know more</a>
+					</div>
+					<div class="btn flex space-between">
+						<a class="yellow" v-show="false" href="javascript:;">Exchange</a>
+						<a class="yellow " v-show="false" @click="$router.push( '/withdraw') " href="javascript: ">Withdraw</a>
+						<a class="yellow " href="javascript:;" @click="$router.push( '/recharge') ">Recharge</a>
+					</div>
+				</div>
+			</div>
+			<div class=" section3 ">
+				<h2 class="green ">Happy Wallet</h2>
+				<div class="silver ">
+					<h3>Happy Silver</h3>
+					<p>
+						Happy Silver can be used to save your payment when you book your Domestic Flight as an instant discount cash.
+					</p>
+					<a class="yellow " href="javascript: ">Know More</a>
+				</div>
+				<div class="gold ">
+					<h3>Happy Gold</h3>
+					<p>
+						Happy Gold can be used to pay for your order and withdraw as well. Just like your own cash.
+					</p>
+					<a class="yellow " href="javascript: ">Know More</a>
+				</div>
+			</div>
+			<div class="section4 ">
+				<div class="btn flex space-between ">
+					<a :class="{selec:isChooseB} " @click="isChooseB=!isChooseB ">Happy Silver</a>
+					<a :class="{selec:!isChooseB} " @click="isChooseB=!isChooseB ">Happy Gold</a>
+				</div>
+				<div class="detail ">
+					<div v-show="isChooseB ">
+						<ul class="title ">
+							<li class="flex space-between ">
+								<span>Date &amp; Order</span>
+							</li>
+							<li class="flex space-between ">
+								<span>Type</span>
+							</li>
+							<li class="flex space-between ">
+								<span>Amount</span>
+
+							</li>
+							<li class="flex space-between ">
+								<span>Balance</span>
+							</li>
+						</ul>
+						<ul v-for="silver in silverList " :key="silver.id ">
+							<li class="flex space-between ">
+								<span>{{silverOrderDate(silver)}}</span>
+							</li>
+							<li class="flex space-between ">
+								<span>{{silverWalletType(silver)}}</span>
+							</li>
+							<li class="flex space-between ">
+								<p class="green ">
+									<span class="rs ">Rs.</span>{{silver.amount | formatDate}}</p>
+							</li>
+							<li class="flex space-between ">
+								<p>
+									<span class="rs ">Rs.</span>{{silver.balance | formatDate}}</p>
+							</li>
+						</ul>
+					</div>
+					<div v-show="!isChooseB ">
+						<ul class="title ">
+							<li>
+								<span>Date &amp; Order</span>
+							</li>
+							<li>
+								<span>Type</span>
+							</li>
+							<li>
+								<span>Amount</span>
+
+							</li>
+							<li>
+								<span>Balance</span>
+							</li>
+						</ul>
+						<ul v-for="gold in goldList " :key="gold.id ">
+							<li>
+								<span>{{goldOrderDate(gold)}}</span>
+							</li>
+							<li>
+								<span>{{goldWalletType(gold)}}</span>
+							</li>
+							<li>
+								<p class="green ">
+									<span class="rs ">Rs.</span>{{gold.amount}}</p>
+							</li>
+							<li>
+								<p>
+									<span class="rs ">Rs.</span>{{gold.balance}}</p>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+<script>
+import headTop from '../../components/head/head.vue'
+import { TimeFormatUtil, OrderStatusUtil } from '../../models/utils'
+export default {
+	components: {
+		headTop
+	},
+	data() {
+		return {
+			isChooseB: true,
+			silverRunning: null,
+			goldRunning: null
+		}
+	},
+	methods: {
+		silverOrderDate(silver) {
+			return TimeFormatUtil.getWalletDate(silver.creattime);
+		},
+		silverWalletType(silver) {
+			return OrderStatusUtil.getSilverType(silver.type);
+		},
+		goldOrderDate(gold) {
+			return TimeFormatUtil.getWalletDate(gold.createTime);
+		},
+		goldWalletType(gold) {
+			return OrderStatusUtil.getGoldType(gold.type);
+		},
+
+	},
+	computed: {
+		happySilver() {
+			let silver = this.$store.getters.silver;
+			return silver && silver.happySilverBalance ? silver.happySilverBalance : JSON.parse(sessionStorage.getItem('silver')).happySilverBalance;
+		},
+		happyGold() {
+			let gold = this.$store.getters.gold;
+			return gold && gold.happyGoldBalance ? gold.happyGoldBalance : JSON.parse(sessionStorage.getItem('gold')).happyGoldBalance;
+		},
+		totalPrice() {
+			return this.happySilver + this.happyGold;
+		},
+		silverList() {
+			return this.silverRunning && this.silverRunning.list;
+		},
+		goldList() {
+			return this.goldRunning && this.goldRunning.list;
+		}
+	},
+	mounted() {
+		this.silverRunning = JSON.parse(sessionStorage.getItem('silver')).happySilverRunning;
+		this.goldRunning = JSON.parse(sessionStorage.getItem('gold')).happyGoldRunning;
+	}
+}
+</script>
+<style lang="less" scoped>
+@import "./content.less";
+</style>
